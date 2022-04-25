@@ -2,7 +2,7 @@
 ## Makefile generated for component 'Slip'. 
 ## 
 ## Makefile     : Slip.mk
-## Generated on : Mon Mar 14 22:25:43 2022
+## Generated on : Sat Apr 02 09:27:11 2022
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)/Slip.exe
 ## Product type : executable
 ## 
@@ -155,7 +155,7 @@ DEFINES = $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS) $(DEFINES_STAN
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)/Slip_ert_rtw/Slip.c
+SRCS = $(START_DIR)/Slip_ert_rtw/Slip.c $(START_DIR)/Slip_ert_rtw/Slip_data.c
 
 MAIN_SRC = $(START_DIR)/Slip_ert_rtw/ert_main.c
 
@@ -165,7 +165,7 @@ ALL_SRCS = $(SRCS) $(MAIN_SRC)
 ## OBJECTS
 ###########################################################################
 
-OBJS = Slip.obj
+OBJS = Slip.obj Slip_data.obj
 
 MAIN_OBJ = ert_main.obj
 
@@ -282,6 +282,10 @@ $(PRODUCT) : $(OBJS) $(PREBUILT_OBJS) $(MAIN_OBJ)
 
 
 Slip.obj : $(START_DIR)/Slip_ert_rtw/Slip.c
+	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
+
+
+Slip_data.obj : $(START_DIR)/Slip_ert_rtw/Slip_data.c
 	$(CC) $(CFLAGS) -Fo"$@" $(subst /,\,"$<")
 
 

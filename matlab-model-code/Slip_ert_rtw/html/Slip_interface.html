@@ -304,7 +304,7 @@ Prototype
 </td>
 <td width="75%" align="left" valign="top">
 <b>
-void Slip_step(RT_MODEL&nbsp;*const&nbsp;rtM)
+void Slip_step(RT_MODEL&nbsp;*const&nbsp;rtM, real_T rtU_Driver_req, real_T rtU_u_bar, real_T rtU_omega_rr, real_T rtU_omega_rl, real_T rtU_yaw_rate, real_T rtU_Brake, real_T&nbsp;*rtY_Tm_rr, real_T&nbsp;*rtY_Tm_rl)
 </b>
 
 </td>
@@ -333,7 +333,7 @@ Must be called periodically, every 0.001 seconds
 Arguments
 </td>
 <td width="75%" align="left" valign="top">
-<table class="AltRow FirstColumn" cellspacing="0">
+<span title="Click to shrink or expand table" onclick="rtwTableShrink(this)">[-]</span><table class="AltRow FirstColumn" cellspacing="0">
 <tr class="heading">
 <th align="left" valign="top">
 <b>
@@ -373,6 +373,126 @@ RT_MODEL&nbsp;*const
 </td>
 <td align="left" valign="top">
 RTModel
+</td>
+
+</tr>
+<tr class="odd">
+<td align="right" valign="top">
+2
+</td>
+<td align="left" valign="top">
+rtU_Driver_req
+</td>
+<td align="left" valign="top">
+real_T
+</td>
+<td align="left" valign="top">
+<a href="matlab:coder.internal.code2model('Fenice_VehicleModel:7652')" name="code2model" class="code2model">&lt;S1&gt;/driver_request</a>
+</td>
+
+</tr>
+<tr class="even">
+<td align="right" valign="top">
+3
+</td>
+<td align="left" valign="top">
+rtU_u_bar
+</td>
+<td align="left" valign="top">
+real_T
+</td>
+<td align="left" valign="top">
+<a href="matlab:coder.internal.code2model('Fenice_VehicleModel:7653')" name="code2model" class="code2model">&lt;S1&gt;/u_bar</a>
+</td>
+
+</tr>
+<tr class="odd">
+<td align="right" valign="top">
+4
+</td>
+<td align="left" valign="top">
+rtU_omega_rr
+</td>
+<td align="left" valign="top">
+real_T
+</td>
+<td align="left" valign="top">
+<a href="matlab:coder.internal.code2model('Fenice_VehicleModel:7654')" name="code2model" class="code2model">&lt;S1&gt;/omega_rr</a>
+</td>
+
+</tr>
+<tr class="even">
+<td align="right" valign="top">
+5
+</td>
+<td align="left" valign="top">
+rtU_omega_rl
+</td>
+<td align="left" valign="top">
+real_T
+</td>
+<td align="left" valign="top">
+<a href="matlab:coder.internal.code2model('Fenice_VehicleModel:7655')" name="code2model" class="code2model">&lt;S1&gt;/omega_rl</a>
+</td>
+
+</tr>
+<tr class="odd">
+<td align="right" valign="top">
+6
+</td>
+<td align="left" valign="top">
+rtU_yaw_rate
+</td>
+<td align="left" valign="top">
+real_T
+</td>
+<td align="left" valign="top">
+<a href="matlab:coder.internal.code2model('Fenice_VehicleModel:7656')" name="code2model" class="code2model">&lt;S1&gt;/Omega</a>
+</td>
+
+</tr>
+<tr class="even">
+<td align="right" valign="top">
+7
+</td>
+<td align="left" valign="top">
+rtU_Brake
+</td>
+<td align="left" valign="top">
+real_T
+</td>
+<td align="left" valign="top">
+<a href="matlab:coder.internal.code2model('Fenice_VehicleModel:7658')" name="code2model" class="code2model">&lt;S1&gt;/Brake</a>
+</td>
+
+</tr>
+<tr class="odd">
+<td align="right" valign="top">
+8
+</td>
+<td align="left" valign="top">
+rtY_Tm_rr
+</td>
+<td align="left" valign="top">
+real_T&nbsp;*
+</td>
+<td align="left" valign="top">
+synthesized block
+</td>
+
+</tr>
+<tr class="even">
+<td align="right" valign="top">
+9
+</td>
+<td align="left" valign="top">
+rtY_Tm_rl
+</td>
+<td align="left" valign="top">
+real_T&nbsp;*
+</td>
+<td align="left" valign="top">
+synthesized block
 </td>
 
 </tr>
@@ -642,9 +762,51 @@ Interface Parameters
 </a>
 
 </h3>
-<p>
-No interface/tunable parameters in model.
-</p>
+<table width="100%" class="AltRow FirstColumn" cellspacing="0">
+<tr class="heading">
+<th width="42%" align="left" valign="top">
+<b>
+Parameter Source
+</b>
+
+</th>
+<th width="26%" align="left" valign="top">
+<b>
+Code Identifier
+</b>
+
+</th>
+<th width="21%" align="left" valign="top">
+<b>
+Data Type
+</b>
+
+</th>
+<th width="10%" align="right" valign="top">
+<b>
+Dimension
+</b>
+
+</th>
+
+</tr>
+<tr class="even">
+<td width="42%" align="left" valign="top">
+lambda_ref
+</td>
+<td width="26%" align="left" valign="top">
+lambda_ref
+</td>
+<td width="21%" align="left" valign="top">
+real_T
+</td>
+<td width="10%" align="right" valign="top">
+1
+</td>
+
+</tr>
+
+</table>
 <h3>
 <a name="sec_Data_Stores">
 Data Stores

@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Slip'.
  *
- * Model version                  : 3.3
+ * Model version                  : 3.5
  * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Mon Mar 14 22:25:29 2022
+ * C/C++ source code generated on : Sat Apr  2 09:26:59 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -26,6 +26,7 @@
 
 static RT_MODEL rtM_;
 static RT_MODEL *const rtMPtr = &rtM_; /* Real-time model */
+static DW rtDW;                        /* Observable states */
 
 /* '<Root>/driver_request' */
 static real_T rtU_Driver_req;
@@ -85,7 +86,8 @@ void rt_OneStep(RT_MODEL *const rtM)
   /* Set model inputs here */
 
   /* Step the model */
-  Slip_step(rtM);
+  Slip_step(rtM, rtU_Driver_req, rtU_u_bar, rtU_omega_rr, rtU_omega_rl,
+            rtU_yaw_rate, rtU_Brake, &rtY_Tm_rr, &rtY_Tm_rl);
 
   /* Get model outputs here */
 
@@ -112,6 +114,7 @@ int_T main(int_T argc, const char *argv[])
   (void)(argv);
 
   /* Pack model data into RTM */
+  rtM->dwork = &rtDW;
 
   /* Initialize model */
   Slip_initialize(rtM, &rtU_Driver_req, &rtU_u_bar, &rtU_omega_rr, &rtU_omega_rl,
