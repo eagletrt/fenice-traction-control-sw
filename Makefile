@@ -59,6 +59,7 @@ $(BUILD_DIR)/libctrl-no.so: $(MODEL_NO_SRCS)
 # Build target for the main program
 $(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
 	mkdir -p $(BUILD_DIR)
+	git submodule update --init --recursive
 	$(CC) $(CFLAGS_ALL) $(CFLAGS_MAIN) -ldl $^ -o $@ $(LDFLAGS)
 
 # Build all

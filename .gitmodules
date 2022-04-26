@@ -1,0 +1,3 @@
+[submodule "micro-libs"]
+	path = micro-libs
+	url = git@github.com:eagletrt/micro-libs.git
