@@ -7,8 +7,8 @@ SRC_DIR := ./src
 BUILD_DIR := ./build
 .PHONY: all clean
 
-
 # --------------------------------- Variables ----------------------------------
+
 # Target executables (main program and model servers)
 ALL_TARGETS := fenice-traction-control libctrl-sc.so libctrl-tv.so libctrl-all.so libctrl-no.so
 
@@ -56,14 +56,14 @@ $(BUILD_DIR)/libctrl-no.so: $(MODEL_NO_SRCS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT) -I$(MODEL_NO_DIR) $^ -o $@ $(LDFLAGS)
 
-
 # Build target for the main program
 $(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS_ALL) $(CFLAGS_MAIN) -ldl $^ -o $@ $(LDFLAGS)
 
+# Build all
 all: $(addprefix $(BUILD_DIR)/,$(ALL_TARGETS))
 	
-
+# Clean build directory
 clean:
 	rm -r $(BUILD_DIR)
