@@ -3,7 +3,6 @@ CFLAGS_ALL = -g -Wall
 CFLAGS_MODELS := -fpic -shared
 CFLAGS_MAIN := -ldl
 LDFLAGS = -lm
-SRC_DIR := ./src
 BUILD_DIR := ./build
 .PHONY: all clean
 
@@ -32,7 +31,8 @@ MODEL_NO_DIR   := $(MATLAB_ROOT)/No_ert_rtw
 MODEL_NO_SRCS  := $(addprefix $(MODEL_NO_DIR)/, No.c)
 
 # Main program source files
-MAIN_SRCS := $(addprefix $(SRC_DIR)/, main.c models_interface.c)
+MAIN_SRC_DIR := ./src
+MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c)
 
 # ------------------------------- Build targets --------------------------------
 
