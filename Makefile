@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS_ALL = -g -Wall
 CFLAGS_MODELS := -fpic -shared
-CFLAGS_MAIN := -ldl
+CFLAGS_MAIN := -ldl -Imicro-libs/ctrl-nwk-utils
 LDFLAGS = -lm
 BUILD_DIR := ./build
 .PHONY: all clean
