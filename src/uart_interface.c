@@ -6,8 +6,13 @@
 #include "uart_interface.h"
 #include "ctrl-nwk-utils.h"
 
+
 int UART_fd = -1;
 
+
+/**
+ * @brief Initialize the UART interface
+ */
 bool UART_init() {
 	UART_fd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
 
@@ -25,6 +30,9 @@ bool UART_init() {
     return true;
 }
 
+/**
+ * @brief Read from the UART until a whole valid packet is received
+ */
 int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
 	if (uart_fd == -1) {
 		printf("Error: serial port is not open\n");
@@ -62,6 +70,9 @@ int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
     return idx;
 }
 
+/**
+ * @brief Send a packet on the UART interface
+ */
 int UART_send_packet_sync(uint8_t *buf, uint8_t pkt_len) {
 	if (uart_fd == -1) {
 		printf("Error: serial port is not open\n");
