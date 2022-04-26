@@ -3,9 +3,9 @@ This software runs on the Raspberry Pi that communicates with the DAS via UART t
 
 The setup is divided in three steps:
 
-    - RPi setup
-    - Software compilation
-    - Software execution
+- RPi setup
+- Software compilation
+- Software execution
 
 
 ### RPi Setup
