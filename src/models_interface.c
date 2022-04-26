@@ -12,19 +12,19 @@ CTRL_MODE _CTRL_curr_mode = CTRL_NONE;
 bool _CTRL_is_model_initialized = false;
 
 void (*model_sc_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*model_sc_step_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
+void (*model_sc_step_fn) (Matlab_RTM*, double, double, double, double, double, double, double, double*, double*);
 void *libsc_handle = NULL;
 
 void (*model_tv_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*model_tv_step_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
+void (*model_tv_step_fn) (Matlab_RTM*, double, double, double, double, double, double, double, double*, double*);
 void *libtv_handle = NULL;
 
 void (*model_all_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*model_all_step_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
+void (*model_all_step_fn) (Matlab_RTM*, double, double, double, double, double, double, double, double*, double*);
 void *liball_handle = NULL;
 
 void (*model_no_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*model_no_step_fn) (Matlab_RTM*, double*, double*, double*);
+void (*model_no_step_fn) (Matlab_RTM*, double, double*, double*);
 void *libno_handle = NULL;
 
 
@@ -54,7 +54,7 @@ CTRL_ModelOutputTypeDef step_model(CTRL_ModelInputTypeDef data) {
             else
                 (*model_no_step_fn)(
                     &_CTRL_rtm,
-                    &(data.rtU_Driver_req),
+                    data.rtU_Driver_req,
                     &(out.rtY_Tm_rr),
                     &(out.rtY_Tm_rl)
                 );
@@ -76,13 +76,13 @@ CTRL_ModelOutputTypeDef step_model(CTRL_ModelInputTypeDef data) {
             else
                 (*model_sc_step_fn)(
                     &_CTRL_rtm,
-                    &(data.rtU_Driver_req),
-                    &(data.rtU_u_bar),
-                    &(data.rtU_omega_rr),
-                    &(data.rtU_omega_rl),
-                    &(data.rtU_yaw_rate),
-                    &(data.rtU_Steeringangle),
-                    &(data.rtU_Brake),
+                    data.rtU_Driver_req,
+                    data.rtU_u_bar,
+                    data.rtU_omega_rr,
+                    data.rtU_omega_rl,
+                    data.rtU_yaw_rate,
+                    data.rtU_Steeringangle,
+                    data.rtU_Brake,
                     &(out.rtY_Tm_rr),
                     &(out.rtY_Tm_rl)
                 );
@@ -104,13 +104,13 @@ CTRL_ModelOutputTypeDef step_model(CTRL_ModelInputTypeDef data) {
             else
                 (*model_tv_step_fn)(
                     &_CTRL_rtm,
-                    &(data.rtU_Driver_req),
-                    &(data.rtU_u_bar),
-                    &(data.rtU_omega_rr),
-                    &(data.rtU_omega_rl),
-                    &(data.rtU_yaw_rate),
-                    &(data.rtU_Steeringangle),
-                    &(data.rtU_Brake),
+                    data.rtU_Driver_req,
+                    data.rtU_u_bar,
+                    data.rtU_omega_rr,
+                    data.rtU_omega_rl,
+                    data.rtU_yaw_rate,
+                    data.rtU_Steeringangle,
+                    data.rtU_Brake,
                     &(out.rtY_Tm_rr),
                     &(out.rtY_Tm_rl)
                 );
@@ -132,13 +132,13 @@ CTRL_ModelOutputTypeDef step_model(CTRL_ModelInputTypeDef data) {
             else
                 (*model_all_step_fn)(
                     &_CTRL_rtm,
-                    &(data.rtU_Driver_req),
-                    &(data.rtU_u_bar),
-                    &(data.rtU_omega_rr),
-                    &(data.rtU_omega_rl),
-                    &(data.rtU_yaw_rate),
-                    &(data.rtU_Steeringangle),
-                    &(data.rtU_Brake),
+                    data.rtU_Driver_req,
+                    data.rtU_u_bar,
+                    data.rtU_omega_rr,
+                    data.rtU_omega_rl,
+                    data.rtU_yaw_rate,
+                    data.rtU_Steeringangle,
+                    data.rtU_Brake,
                     &(out.rtY_Tm_rr),
                     &(out.rtY_Tm_rl)
                 );     
