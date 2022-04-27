@@ -8,24 +8,26 @@
 
 
 int UART_fd = -1;
+// char *uart_dev = "/dev/ttyAMA0";
+char *uart_dev = "/dev/ttyUSB0";
 
 
 /**
  * @brief Initialize the UART interface
  */
 bool UART_init() {
-	UART_fd = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
+	UART_fd = open(uart_dev, O_RDWR | O_NOCTTY | O_NDELAY);
 
-	if (uart_fd == -1) {
-		printf("Error opening serial port\n");
+	if (UART_fd == -1) {
+		printf("Error opening serial port: %s\n", uart_dev);
         return false;
     }
 
 	struct termios options;
-	tcgetattr(uart_fd, &options);
+	tcgetattr(UART_fd, &options);
 	cfsetispeed(&options, B115200);
 	cfsetospeed(&options, B115200);
-	tcsetattr(uart_fd, TCSANOW, &options);
+	tcsetattr(UART_fd, TCSANOW, &options);
 
     return true;
 }
@@ -34,7 +36,7 @@ bool UART_init() {
  * @brief Read from the UART until a whole valid packet is received
  */
 int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
-	if (uart_fd == -1) {
+	if (UART_fd == -1) {
 		printf("Error: serial port is not open\n");
         return 0;
     }
@@ -44,9 +46,9 @@ int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
     bool pkt_complete = false;
 
     while (!pkt_complete) {
-        uint8_t bytes_read = read(UART_fd, buf+idx, 1);
-
-        if (bytes_read == 0) {
+        int8_t bytes_read = read(UART_fd, buf+idx, 1);
+        
+        if (bytes_read <= 0) {
             printf("UART returned no bytes\n");
             return 0;
         }
@@ -74,7 +76,7 @@ int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
  * @brief Send a packet on the UART interface
  */
 int UART_send_packet_sync(uint8_t *buf, uint8_t pkt_len) {
-	if (uart_fd == -1) {
+	if (UART_fd == -1) {
 		printf("Error: serial port is not open\n");
         return 0;
     }

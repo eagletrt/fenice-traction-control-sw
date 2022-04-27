@@ -32,7 +32,7 @@ MODEL_NO_SRCS  := $(addprefix $(MODEL_NO_DIR)/, No.c)
 
 # Main program source files
 MAIN_SRC_DIR := ./src
-MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c)
+MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c ../micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c)
 
 # ------------------------------- Build targets --------------------------------
 
