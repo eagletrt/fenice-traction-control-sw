@@ -11,31 +11,33 @@ CTRL_ModelOutputTypeDef model_output = {};
 const uint8_t UART_MAX_BUF_LEN = 30;
 
 
-void update_model(float dreq) {
+void _update_model(float dreq) {
     model_input.rtU_Driver_req = dreq;
-    model_output = step_model(model_input);
+    model_output = CTRL_step_model(model_input);
 }
 
-void send_frame(CTRL_PayloadTypeDef frame) {
+void _send_frame(CTRL_PayloadTypeDef frame) {
     uint8_t buf[UART_MAX_BUF_LEN];
     uint8_t pkt_len = CTRL_compose_frame(&frame, buf);
     UART_send_packet_sync(buf, pkt_len);
 }
 
-void send_torque(float tl, float tr) {
+void _send_torque(float tl, float tr) {
     CTRL_PayloadTypeDef frame;
-    frame.ParamID = CTRL_PARAMID_TMLL;
     frame.CRC = 0x0;
 
+    frame.ParamID = CTRL_PARAMID_TMLL;
     frame.ParamVal = tl;
-    send_frame(frame);
+    _send_frame(frame);
+
+    frame.ParamID = CTRL_PARAMID_TMRR;
     frame.ParamVal = tr;
-    send_frame(frame);
+    _send_frame(frame);
 }
 
 int main() {
     UART_init();
-    change_ctrl_mode(CTRL_NONE);
+    CTRL_change_mode(CTRL_NONE);
 
     while (1) {
         CTRL_PayloadTypeDef ctrl_frame;
@@ -59,7 +61,7 @@ int main() {
             continue;
         }
 
-        update_model(ctrl_frame.ParamVal);
-        send_torque(model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
+        _update_model(ctrl_frame.ParamVal);
+        _send_torque(model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
     }
 }

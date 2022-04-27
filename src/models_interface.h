@@ -25,7 +25,7 @@ typedef struct {
 } CTRL_ModelOutputTypeDef;
 
 
-void change_ctrl_mode(CTRL_MODE);
-CTRL_ModelOutputTypeDef step_model(CTRL_ModelInputTypeDef);
+void CTRL_change_mode(CTRL_MODE);
+CTRL_ModelOutputTypeDef CTRL_step_model(CTRL_ModelInputTypeDef);
 
 #endif

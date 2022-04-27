@@ -33,7 +33,7 @@ void _load_model_lib();
 void _load_lib_syms();
 
 
-CTRL_ModelOutputTypeDef step_model(CTRL_ModelInputTypeDef data) {
+CTRL_ModelOutputTypeDef CTRL_step_model(CTRL_ModelInputTypeDef data) {
     CTRL_ModelOutputTypeDef out;
 
     switch (_CTRL_curr_mode) {
@@ -155,7 +155,7 @@ CTRL_ModelOutputTypeDef step_model(CTRL_ModelInputTypeDef data) {
 /**
  * @brief Change the traction control model being used by loading the appropriate dynamic library
  */
-void change_ctrl_mode(CTRL_MODE new_mode) {
+void CTRL_change_mode(CTRL_MODE new_mode) {
     _CTRL_curr_mode = new_mode;
     _CTRL_is_model_initialized = false;
 
