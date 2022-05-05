@@ -9,7 +9,24 @@ The setup is divided in three steps:
 
 
 ### RPi Setup
-OS setup, ...
+
+##### Install TinyCore Linux
+
+- ...
+- Set password to `sborato` with `passwd`
+- Since TC runs completely in RAM, changes are made them permanent y editing `/opt/.filetool.lst` (a list of files to backup before shutdown and restore after boot). Make the password change permanent with `sudo echo '/etc/shadow' >> /opt/.filetool.lst`
+- Trigger the backup with `filetool.sh -b`
+
+##### Install GCC, Make etc
+...
+
+##### Configure SSH
+
+- If it's not already installed, run `tce-load -wi openssh`
+- To autostart it at every boot edit the startup script `sudo echo '/usr/local/etc/init.d/openssh start &' >> /opt/bootlocal.sh`
+- The SSH keys are lost and regenerated after every reboot. Add them to the filetool list with `sudo echo '/usr/local/etc/ssh' >> /opt/.filetool.lst`
+- Trigger the backup with `filetool.sh -b`
+
 
 ### Compiling
 Makefile and libraries, ...

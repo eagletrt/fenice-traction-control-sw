@@ -3,20 +3,22 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
+#include <errno.h>
+#include <string.h>
 #include "uart_interface.h"
 #include "ctrl-nwk-utils.h"
 
 
 int UART_fd = -1;
-// char *uart_dev = "/dev/ttyAMA0";
-char *uart_dev = "/dev/ttyUSB0";
+char *uart_dev = "/dev/ttyAMA0";
+// char *uart_dev = "/dev/ttyUSB0";
 
 
 /**
  * @brief Initialize the UART interface
  */
 bool UART_init() {
-	UART_fd = open(uart_dev, O_RDWR | O_NOCTTY | O_NDELAY);
+	UART_fd = open(uart_dev, O_RDWR | O_NOCTTY);
 
 	if (UART_fd == -1) {
 		printf("Error opening serial port: %s\n", uart_dev);
@@ -25,6 +27,16 @@ bool UART_init() {
 
 	struct termios options;
 	tcgetattr(UART_fd, &options);
+    
+    /* Disable all I/O processing */
+    options.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
+    options.c_oflag = 0; //&= ~(OCRNL | ONLCR | ONLRET | ONOCR | ONOEOT| OFILL | OLCUC | OPOST);
+    options.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
+    options.c_cflag &= ~(CSIZE | PARENB);
+    options.c_cflag |= CS8;
+    // One input byte is enough to return from read()
+    options.c_cc[VMIN]  = 1;
+    options.c_cc[VTIME] = 0;
 	cfsetispeed(&options, B115200);
 	cfsetospeed(&options, B115200);
 	tcsetattr(UART_fd, TCSANOW, &options);
@@ -47,9 +59,9 @@ int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
 
     while (!pkt_complete) {
         int8_t bytes_read = read(UART_fd, buf+idx, 1);
-        
-        if (bytes_read <= 0) {
-            printf("UART returned no bytes\n");
+
+        if (bytes_read == -1) {
+            printf("Error: %s\n", strerror(errno));
             return 0;
         }
 

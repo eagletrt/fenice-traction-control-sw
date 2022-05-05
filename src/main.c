@@ -1,5 +1,8 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <signal.h>
+#include <sys/time.h>
 #include "models_interface.h"
 #include "uart_interface.h"
 #include "ctrl-nwk-utils.h"
@@ -13,7 +16,9 @@ const uint8_t UART_MAX_BUF_LEN = 30;
 
 void _update_model(float dreq) {
     model_input.rtU_Driver_req = dreq;
+    // printf("Model input set at %.2f\n", model_input.rtU_Driver_req);
     model_output = CTRL_step_model(model_input);
+    // printf("mdoel returned: %.2f %.2f\n", model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
 }
 
 void _send_frame(CTRL_PayloadTypeDef frame) {
@@ -35,9 +40,24 @@ void _send_torque(float tl, float tr) {
     _send_frame(frame);
 }
 
+void signal_handler(int signum) {
+    printf("Sending torque: %.2f, %.2f\n", model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
+    _send_torque(model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
+}
+
 int main() {
     UART_init();
     CTRL_change_mode(CTRL_NONE);
+
+    signal(SIGALRM, signal_handler);
+    struct itimerval timer_info;
+    timer_info.it_interval.tv_sec = timer_info.it_value.tv_sec = 0;
+    timer_info.it_interval.tv_usec = timer_info.it_value.tv_usec = 50000;
+    
+    if (setitimer(ITIMER_REAL, &timer_info, NULL) == 0)
+        printf("Timer set OK\n");
+    else
+        printf("Timer set failed\n");
 
     while (1) {
         CTRL_PayloadTypeDef ctrl_frame;
@@ -51,10 +71,10 @@ int main() {
 
         CTRL_read_frame(UART_rx_buf, pkt_len, &ctrl_frame);
 
-        printf("\nRead frame:\n");
-        printf("     ParamID: 0x%02x\n", ctrl_frame.ParamID);
-        printf("    ParamVal: %.2f\n", ctrl_frame.ParamVal);
-        printf("       CRC16: 0x%04x\n", ctrl_frame.CRC);
+        // printf("\nRead frame:\n");
+        // printf("     ParamID: 0x%02x\n", ctrl_frame.ParamID);
+        // printf("    ParamVal: %.2f\n", ctrl_frame.ParamVal);
+        // printf("       CRC16: 0x%04x\n", ctrl_frame.CRC);
 
         if (ctrl_frame.ParamID != CTRL_PARAMID_DREQ) {
             printf("Parameter not yet supported\n");
@@ -62,6 +82,5 @@ int main() {
         }
 
         _update_model(ctrl_frame.ParamVal);
-        _send_torque(model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
     }
 }
