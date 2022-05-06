@@ -1,0 +1,5 @@
+title: ECU
+nav:
+    - Overview: index.md
+    - RPi Setup: rpi-setup.md
+    - Compiling & Executing: compiling.md
