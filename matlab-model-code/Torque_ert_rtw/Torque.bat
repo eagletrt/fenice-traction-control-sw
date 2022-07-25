@@ -1,11 +1,9 @@
 
-set MATLAB=C:\Program Files\MATLAB\R2021a
+call "setup_mingw.bat"
 
 cd .
 
-chcp 1252
-
-if "%1"=="" ("C:\PROGRA~1\MATLAB\R2021a\bin\win64\gmake"  -f Torque.mk all) else ("C:\PROGRA~1\MATLAB\R2021a\bin\win64\gmake"  -f Torque.mk %1)
+if "%1"=="" ("C:\PROGRA~1\MATLAB\R2022a\bin\win64\gmake"  -f Torque.mk all) else ("C:\PROGRA~1\MATLAB\R2022a\bin\win64\gmake"  -f Torque.mk %1)
 @if errorlevel 1 goto error_exit
 
 exit /B 0

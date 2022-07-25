@@ -6,6 +6,7 @@
 #include "models_interface.h"
 #include "uart_interface.h"
 #include "ctrl-nwk-utils.h"
+#include "velocity_estimation.h"
 
 
 CTRL_ModelInputTypeDef model_input = {};
@@ -27,6 +28,11 @@ void _send_frame(CTRL_PayloadTypeDef frame) {
     UART_send_packet_sync(buf, pkt_len);
 }
 
+void signal_handler(int signum) {
+    printf("Sending torque: %.2f, %.2f\n", model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
+    _send_torque(model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
+}
+
 void _send_torque(float tl, float tr) {
     CTRL_PayloadTypeDef frame;
     frame.CRC = 0x0;
@@ -38,11 +44,6 @@ void _send_torque(float tl, float tr) {
     frame.ParamID = CTRL_PARAMID_TMRR;
     frame.ParamVal = tr;
     _send_frame(frame);
-}
-
-void signal_handler(int signum) {
-    printf("Sending torque: %.2f, %.2f\n", model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
-    _send_torque(model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
 }
 
 int main() {

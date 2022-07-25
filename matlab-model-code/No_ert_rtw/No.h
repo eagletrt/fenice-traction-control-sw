@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'No'.
  *
- * Model version                  : 3.3
- * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Mon Mar 14 22:27:51 2022
+ * Model version                  : 5.241
+ * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
+ * C/C++ source code generated on : Sat May 21 16:04:53 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -21,13 +21,14 @@
 
 #ifndef RTW_HEADER_No_h_
 #define RTW_HEADER_No_h_
-#include <stddef.h>
 #ifndef No_COMMON_INCLUDES_
 #define No_COMMON_INCLUDES_
 #include "rtwtypes.h"
 #include "rtw_continuous.h"
 #include "rtw_solver.h"
 #endif                                 /* No_COMMON_INCLUDES_ */
+
+#include <stddef.h>
 
 /* Model Code Variants */
 
@@ -51,16 +52,11 @@ struct tag_RTM {
 /* Model entry point functions */
 extern void No_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
   *rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl, real_T *rtU_yaw_rate,
-  real_T *rtU_Steeringangle, real_T *rtU_Brake, real_T *rtY_Tm_rr, real_T
-  *rtY_Tm_rl);
-extern void No_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T
-                    *rtY_Tm_rr, real_T *rtY_Tm_rl);
-
-/*-
- * These blocks were eliminated from the model due to optimizations:
- *
- * Block '<S1>/Buffer' : Eliminated nontunable gain of 1
- */
+  real_T *rtU_Steeringangle, real_T *rtU_Brake, real_T *rtU_Tm_rl, real_T
+  *rtU_Tm_rr, real_T *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr, real_T *
+  rtY_Tm_rl);
+extern void No_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_Tm_rl,
+                    real_T rtU_Tm_rr, real_T *rtY_Tm_rr, real_T *rtY_Tm_rl);
 
 /*-
  * The generated code includes comments that allow you to trace directly

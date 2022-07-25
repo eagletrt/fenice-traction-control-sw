@@ -54,26 +54,16 @@ int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
     }
 
     uint8_t idx = 0;
-    bool is_escaping = false;
-    bool pkt_complete = false;
 
-    while (!pkt_complete) {
+    while (!CTRL_is_frame_wellformed(buf, idx)) {
         int8_t bytes_read = read(UART_fd, buf+idx, 1);
 
         if (bytes_read == -1) {
             printf("Error: %s\n", strerror(errno));
             return 0;
-        }
-
-        if (buf[idx] == CTRL_DLE && !is_escaping) {
-            is_escaping = true;
         } else {
-            if (is_escaping && buf[idx] == CTRL_ETX)
-                pkt_complete = true;
-            is_escaping = false;
+            idx += bytes_read;
         }
-
-        idx += bytes_read;
 
         if (idx == max_len) {
             printf("Maximum buffer size was reached but no valid packet was detected\n");

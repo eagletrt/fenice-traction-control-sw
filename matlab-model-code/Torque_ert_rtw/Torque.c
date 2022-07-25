@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Torque'.
  *
- * Model version                  : 3.3
- * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Mon Mar 14 22:26:33 2022
+ * Model version                  : 5.241
+ * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
+ * C/C++ source code generated on : Sat May 21 16:04:27 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -20,6 +20,8 @@
  */
 
 #include "Torque.h"
+#include <math.h>
+#include "rtwtypes.h"
 
 static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
   uint32_T maxIndex);
@@ -28,9 +30,7 @@ static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
 {
   real_T frac;
   real_T yL_0d0;
-  uint32_T bpIdx;
   uint32_T iLeft;
-  uint32_T iRght;
 
   /* Column-major Lookup 1-D
      Search method: 'binary'
@@ -51,6 +51,9 @@ static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
     iLeft = 0U;
     frac = (u0 - bp0[0U]) / (bp0[1U] - bp0[0U]);
   } else if (u0 < bp0[maxIndex]) {
+    uint32_T bpIdx;
+    uint32_T iRght;
+
     /* Binary Search */
     bpIdx = maxIndex >> 1U;
     iLeft = 0U;
@@ -82,219 +85,290 @@ static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
 
 /* Model step function */
 void Torque_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
-                 real_T rtU_yaw_rate, real_T rtU_Steeringangle, real_T
-                 *rtY_Tm_rr, real_T *rtY_Tm_rl)
+                 real_T rtU_yaw_rate, real_T rtU_Steeringangle, real_T rtU_Tm_rl,
+                 real_T rtU_Tm_rr, real_T rtU_map_tv, real_T *rtY_Tm_rr, real_T *
+                 rtY_Tm_rl)
 {
   DW *rtDW = rtM->dwork;
-  real_T T_rl_sat;
-  real_T T_rr_sat;
+  real_T rtb_Gain;
   real_T rtb_IProdOut;
-  real_T rtb_Saturation;
-  real_T rtb_T_diff;
-  real_T rtb_ZeroGain;
+  real_T rtb_PProdOut;
+  real_T rtb_SumFdbk;
+  real_T rtb_Switch2_k;
+  real_T rtb_T_diff_p;
+  real_T rtb_T_rr;
   real_T rtb_delta_F;
+  real_T rtb_delta_F_tmp;
+  int8_T rtb_IProdOut_0;
+  int8_T rtb_T_diff_a;
 
-  /* MATLAB Function: '<S4>/SteeringModel' incorporates:
+  /* MATLAB Function: '<S6>/SteeringModel' incorporates:
    *  Inport: '<Root>/delta'
    */
-  rtb_IProdOut = pow(rtU_Steeringangle, 4.0);
-  rtb_delta_F = pow(rtU_Steeringangle, 5.0) * 0.00057273150574059159;
-  rtb_Saturation = pow(rtU_Steeringangle, 3.0) * 0.033763750817748066;
-  rtb_T_diff = rtU_Steeringangle * rtU_Steeringangle;
-  rtb_delta_F = (atan(tan(((((rtb_delta_F + rtb_IProdOut * 0.0033926772913763937)
-    + rtb_Saturation) + rtb_T_diff * 0.002563827091551279) + rtU_Steeringangle *
-    0.14012014788005878) + 0.025823733081163723) * 0.9932741359 - 0.01660869904)
-                 + atan(tan(((((rtb_delta_F + rtb_IProdOut *
-    -0.0033926772913763937) + rtb_Saturation) + rtb_T_diff *
-    -0.002563827091551279) + rtU_Steeringangle * 0.14012014788005878) -
-    0.025823733081163723) * 0.9932741359 + 0.01660869904)) / 2.0;
+  rtb_IProdOut = pow(rtU_Steeringangle, 10.0);
+  rtb_SumFdbk = pow(rtU_Steeringangle, 9.0);
+  rtb_T_diff_p = pow(rtU_Steeringangle, 8.0);
+  rtb_delta_F = pow(rtU_Steeringangle, 7.0);
+  rtb_T_rr = pow(rtU_Steeringangle, 6.0);
+  rtb_Switch2_k = pow(rtU_Steeringangle, 5.0);
+  rtb_Gain = pow(rtU_Steeringangle, 4.0);
+  rtb_PProdOut = pow(rtU_Steeringangle, 3.0);
+  rtb_delta_F_tmp = rtU_Steeringangle * rtU_Steeringangle;
+  rtb_delta_F = (((((((((((-2.511353952E-8 * rtb_IProdOut + 1.204729921E-7 *
+    rtb_SumFdbk) - 2.613187764E-7 * rtb_T_diff_p) + 1.437082334E-6 * rtb_delta_F)
+                        - 7.12221471E-6 * rtb_T_rr) + 4.68525841E-5 *
+                       rtb_Switch2_k) - 0.0001855092357 * rtb_Gain) +
+                     0.001856824887 * rtb_PProdOut) - rtb_delta_F_tmp *
+                    0.006374606899) + 0.2126142315 * rtU_Steeringangle) + 3.3E-9)
+                 + ((((((((((2.5259036849999997E-8 * rtb_IProdOut +
+    1.206067049E-7 * rtb_SumFdbk) + 2.599089767E-7 * rtb_T_diff_p) +
+    1.435718737E-6 * rtb_delta_F) + 7.1264231E-6 * rtb_T_rr) + 4.685692282E-5 *
+    rtb_Switch2_k) + 0.0001855053075 * rtb_Gain) + 0.001856820364 * rtb_PProdOut)
+                      + rtb_delta_F_tmp * 0.006374607119) + 0.2126142321 *
+                     rtU_Steeringangle) - 3.3E-9)) / 2.0;
 
-  /* Sum: '<S4>/Sum1' incorporates:
-   *  Constant: '<S7>/Constant'
+  /* Lookup_n-D: '<S10>/1-D Lookup Table2' incorporates:
+   *  Inport: '<Root>/map_tv'
+   *  Lookup_n-D: '<S2>/1-D Lookup Table2'
+   */
+  rtb_T_rr = look1_binlxpw(rtU_map_tv, rtConstP.pooled1, rtConstP.pooled1, 1U);
+
+  /* Product: '<S10>/Product' incorporates:
+   *  Constant: '<S10>/Constant'
+   *  Lookup_n-D: '<S10>/1-D Lookup Table2'
+   */
+  rtb_Switch2_k = 729.50929802955659 * rtb_T_rr;
+
+  /* Sum: '<S6>/Sum1' incorporates:
+   *  Constant: '<S9>/Constant'
    *  Inport: '<Root>/Omega'
    *  Inport: '<Root>/u_bar'
-   *  Lookup_n-D: '<S7>/K_us_table'
-   *  MATLAB Function: '<S7>/Yaw-Rate'
+   *  Lookup_n-D: '<S9>/K_us_table'
+   *  MATLAB Function: '<S9>/Yaw-Rate'
    */
   rtb_IProdOut = rtb_delta_F * rtU_u_bar / (rtU_u_bar * rtU_u_bar *
     look1_binlxpw(rtU_u_bar, rtConstP.K_us_table_bp01Data,
                   rtConstP.K_us_table_tableData, 9U) + 1.53) - rtU_yaw_rate;
 
-  /* Product: '<S49>/PProd Out' incorporates:
+  /* Product: '<S52>/PProd Out' incorporates:
    *  Inport: '<Root>/u_bar'
-   *  Lookup_n-D: '<S8>/P_table'
+   *  Lookup_n-D: '<S10>/P_table'
    */
-  rtb_Saturation = rtb_IProdOut * look1_binlxpw(rtU_u_bar, rtConstP.pooled1,
-    rtConstP.P_table_tableData, 8U);
+  rtb_PProdOut = rtb_IProdOut * look1_binlxpw(rtU_u_bar, rtConstP.pooled2,
+    rtConstP.P_table_tableData, 7U);
 
-  /* Sum: '<S54>/Sum Fdbk' */
-  rtb_T_diff = rtb_Saturation + rtDW->Integrator_DSTATE;
+  /* Sum: '<S58>/Sum Fdbk' */
+  rtb_SumFdbk = rtb_PProdOut + rtDW->Integrator_DSTATE;
 
-  /* DeadZone: '<S37>/DeadZone' */
-  if (rtb_T_diff > 397.91416256157629) {
-    rtb_T_diff -= 397.91416256157629;
-  } else if (rtb_T_diff >= -397.91416256157629) {
-    rtb_T_diff = 0.0;
+  /* Switch: '<S40>/Switch' incorporates:
+   *  Gain: '<S10>/Gain'
+   *  RelationalOperator: '<S40>/u_GTE_up'
+   *  RelationalOperator: '<S40>/u_GT_lo'
+   *  Switch: '<S40>/Switch1'
+   */
+  if (rtb_SumFdbk >= rtb_Switch2_k) {
+    rtb_T_diff_p = rtb_Switch2_k;
+  } else if (rtb_SumFdbk > -rtb_Switch2_k) {
+    /* Switch: '<S40>/Switch1' */
+    rtb_T_diff_p = rtb_SumFdbk;
   } else {
-    rtb_T_diff -= -397.91416256157629;
+    rtb_T_diff_p = -rtb_Switch2_k;
   }
 
-  /* End of DeadZone: '<S37>/DeadZone' */
+  /* End of Switch: '<S40>/Switch' */
 
-  /* Product: '<S41>/IProd Out' incorporates:
+  /* Sum: '<S40>/Diff' */
+  rtb_T_diff_p = rtb_SumFdbk - rtb_T_diff_p;
+
+  /* Product: '<S44>/IProd Out' incorporates:
    *  Inport: '<Root>/u_bar'
-   *  Lookup_n-D: '<S8>/I_table'
+   *  Lookup_n-D: '<S10>/I_table'
    */
-  rtb_IProdOut *= look1_binlxpw(rtU_u_bar, rtConstP.pooled1,
-    rtConstP.I_table_tableData, 8U);
+  rtb_IProdOut *= look1_binlxpw(rtU_u_bar, rtConstP.pooled2,
+    rtConstP.I_table_tableData, 7U);
 
-  /* Signum: '<S35>/SignPreSat' */
-  if (rtb_T_diff < 0.0) {
-    rtb_ZeroGain = -1.0;
-  } else if (rtb_T_diff > 0.0) {
-    rtb_ZeroGain = 1.0;
+  /* Switch: '<S37>/Switch1' incorporates:
+   *  Constant: '<S37>/Constant'
+   *  Constant: '<S37>/Constant2'
+   *  Constant: '<S37>/Constant5'
+   *  RelationalOperator: '<S37>/fix for DT propagation issue'
+   */
+  if (rtb_T_diff_p > 0.0) {
+    rtb_T_diff_a = 1;
   } else {
-    rtb_ZeroGain = rtb_T_diff;
+    rtb_T_diff_a = -1;
   }
 
-  /* End of Signum: '<S35>/SignPreSat' */
+  /* End of Switch: '<S37>/Switch1' */
 
-  /* DataTypeConversion: '<S35>/DataTypeConv1' */
-  rtb_ZeroGain = fmod(rtb_ZeroGain, 256.0);
-
-  /* Signum: '<S35>/SignPreIntegrator' */
-  if (rtb_IProdOut < 0.0) {
-    T_rr_sat = -1.0;
-  } else if (rtb_IProdOut > 0.0) {
-    T_rr_sat = 1.0;
+  /* Switch: '<S37>/Switch2' incorporates:
+   *  Constant: '<S37>/Constant3'
+   *  Constant: '<S37>/Constant4'
+   *  Constant: '<S37>/Constant5'
+   *  RelationalOperator: '<S37>/fix for DT propagation issue1'
+   */
+  if (rtb_IProdOut > 0.0) {
+    rtb_IProdOut_0 = 1;
   } else {
-    T_rr_sat = rtb_IProdOut;
+    rtb_IProdOut_0 = -1;
   }
 
-  /* End of Signum: '<S35>/SignPreIntegrator' */
+  /* End of Switch: '<S37>/Switch2' */
 
-  /* DataTypeConversion: '<S35>/DataTypeConv2' */
-  T_rr_sat = fmod(T_rr_sat, 256.0);
-
-  /* Switch: '<S35>/Switch' incorporates:
-   *  Constant: '<S35>/Constant1'
-   *  DataTypeConversion: '<S35>/DataTypeConv1'
-   *  DataTypeConversion: '<S35>/DataTypeConv2'
-   *  Logic: '<S35>/AND3'
-   *  RelationalOperator: '<S35>/Equal1'
-   *  RelationalOperator: '<S35>/NotEqual'
+  /* Switch: '<S37>/Switch' incorporates:
+   *  Constant: '<S37>/Constant1'
+   *  Constant: '<S37>/Constant5'
+   *  Logic: '<S37>/AND3'
+   *  RelationalOperator: '<S37>/Equal1'
+   *  RelationalOperator: '<S37>/Relational Operator'
    */
-  if ((0.0 != rtb_T_diff) && ((rtb_ZeroGain < 0.0 ? (int32_T)(int8_T)-(int8_T)
-        (uint8_T)-rtb_ZeroGain : (int32_T)(int8_T)(uint8_T)rtb_ZeroGain) ==
-       (T_rr_sat < 0.0 ? (int32_T)(int8_T)-(int8_T)(uint8_T)-T_rr_sat : (int32_T)
-        (int8_T)(uint8_T)T_rr_sat))) {
+  if ((rtb_T_diff_p != 0.0) && (rtb_T_diff_a == rtb_IProdOut_0)) {
     rtb_IProdOut = 0.0;
   }
 
-  /* End of Switch: '<S35>/Switch' */
+  /* End of Switch: '<S37>/Switch' */
 
-  /* DiscreteIntegrator: '<S44>/Integrator' */
-  rtb_ZeroGain = 0.0005 * rtb_IProdOut + rtDW->Integrator_DSTATE;
+  /* DiscreteIntegrator: '<S47>/Integrator' */
+  rtb_SumFdbk = 0.0005 * rtb_IProdOut + rtDW->Integrator_DSTATE;
 
-  /* Sum: '<S53>/Sum' */
-  rtb_Saturation += rtb_ZeroGain;
+  /* Sum: '<S57>/Sum' */
+  rtb_T_diff_p = rtb_PProdOut + rtb_SumFdbk;
 
-  /* Saturate: '<S51>/Saturation' */
-  if (rtb_Saturation > 397.91416256157629) {
-    rtb_Saturation = 397.91416256157629;
-  } else if (rtb_Saturation < -397.91416256157629) {
-    rtb_Saturation = -397.91416256157629;
+  /* Switch: '<S55>/Switch2' incorporates:
+   *  RelationalOperator: '<S55>/LowerRelop1'
+   */
+  if (rtb_T_diff_p <= rtb_Switch2_k) {
+    /* Switch: '<S55>/Switch' incorporates:
+     *  Gain: '<S10>/Gain'
+     *  RelationalOperator: '<S55>/UpperRelop'
+     */
+    if (rtb_T_diff_p < -rtb_Switch2_k) {
+      rtb_Switch2_k = -rtb_Switch2_k;
+    } else {
+      rtb_Switch2_k = rtb_T_diff_p;
+    }
+
+    /* End of Switch: '<S55>/Switch' */
   }
 
-  /* End of Saturate: '<S51>/Saturation' */
+  /* End of Switch: '<S55>/Switch2' */
 
-  /* Gain: '<S2>/Delta_T = 2*Nz*r // (Wr*tau_red*eff)1' incorporates:
-   *  Constant: '<S5>/Constant'
-   *  Product: '<S4>/Product2'
-   *  RelationalOperator: '<S5>/Compare'
+  /* Product: '<S2>/Product2' incorporates:
+   *  Constant: '<S7>/Constant'
+   *  Gain: '<S2>/Delta_T = 2*Nz*r // (Wr*tau_red*eff)1'
+   *  Product: '<S6>/Product2'
+   *  RelationalOperator: '<S7>/Compare'
    */
-  rtb_T_diff = (rtb_delta_F >= 0.05 ? rtb_Saturation : 0.0) * 0.0753931446090652;
+  rtb_T_diff_p = (rtb_delta_F >= 0.034906585039886591 ? rtb_Switch2_k : 0.0) *
+    0.0753931446090652 * rtb_T_rr;
 
-  /* Gain: '<S2>/Max motor torque' incorporates:
+  /* Product: '<S1>/Product1' incorporates:
+   *  Constant: '<S1>/Constant3'
+   *  Inport: '<Root>/Tmax_rl'
+   *  Inport: '<Root>/Tmax_rr'
    *  Inport: '<Root>/driver_request'
+   *  Sum: '<S1>/Add'
    */
-  rtb_delta_F = 55.0 * rtU_Driver_req;
+  rtb_delta_F = (rtU_Tm_rl + rtU_Tm_rr) * 0.5 * rtU_Driver_req;
 
-  /* Sum: '<S2>/Sum2' */
-  rtb_Saturation = rtb_T_diff + rtb_delta_F;
+  /* Sum: '<S1>/Sum2' */
+  rtb_T_rr = rtb_T_diff_p + rtb_delta_F;
 
-  /* Sum: '<S2>/Sum3' */
-  rtb_T_diff = rtb_delta_F - rtb_T_diff;
+  /* Sum: '<S1>/Sum3' */
+  rtb_T_diff_p = rtb_delta_F - rtb_T_diff_p;
 
-  /* MATLAB Function: '<S2>/Saturation block' incorporates:
-   *  Constant: '<S2>/Constant'
+  /* MATLAB Function: '<S1>/Saturation block' incorporates:
+   *  Inport: '<Root>/Tmax_rl'
    *  Inport: '<Root>/u_bar'
    */
   if (rtU_u_bar > 5.0) {
-    if (rtb_Saturation > 55.0) {
-      T_rr_sat = rtb_Saturation - 55.0;
+    if (rtb_T_rr > rtU_Tm_rl) {
+      rtb_Switch2_k = rtb_T_rr - rtU_Tm_rl;
     } else {
-      T_rr_sat = fmin(rtb_Saturation, 0.0);
+      rtb_Switch2_k = fmin(rtb_T_rr, 0.0);
     }
 
-    if (rtb_T_diff > 55.0) {
-      T_rl_sat = rtb_T_diff - 55.0;
-    } else if (rtb_Saturation < 0.0) {
-      T_rl_sat = rtb_T_diff;
+    if (rtb_T_diff_p > rtU_Tm_rl) {
+      rtb_Gain = rtb_T_diff_p - rtU_Tm_rl;
+    } else if (rtb_T_rr < 0.0) {
+      rtb_Gain = rtb_T_diff_p;
     } else {
-      T_rl_sat = 0.0;
+      rtb_Gain = 0.0;
     }
 
-    if (fabs(T_rr_sat) >= fabs(T_rl_sat)) {
-      rtb_delta_F = rtb_Saturation - T_rr_sat;
-      rtb_T_diff += T_rr_sat;
+    if (fabs(rtb_Switch2_k) >= fabs(rtb_Gain)) {
+      rtb_delta_F = rtb_T_rr - rtb_Switch2_k;
+      rtb_T_diff_p += rtb_Switch2_k;
     } else {
-      rtb_delta_F = rtb_Saturation + T_rl_sat;
-      rtb_T_diff -= T_rl_sat;
+      rtb_delta_F = rtb_T_rr + rtb_Gain;
+      rtb_T_diff_p -= rtb_Gain;
     }
   } else {
-    rtb_T_diff = rtb_delta_F;
+    rtb_T_diff_p = rtb_delta_F;
   }
 
-  /* End of MATLAB Function: '<S2>/Saturation block' */
+  /* End of MATLAB Function: '<S1>/Saturation block' */
 
-  /* Saturate: '<S2>/Right_sat' */
-  if (rtb_delta_F > 55.0) {
+  /* Switch: '<S4>/Switch2' incorporates:
+   *  Constant: '<S1>/Constant2'
+   *  Inport: '<Root>/Tmax_rl'
+   *  RelationalOperator: '<S4>/LowerRelop1'
+   *  RelationalOperator: '<S4>/UpperRelop'
+   *  Switch: '<S4>/Switch'
+   */
+  if (rtb_delta_F > rtU_Tm_rl) {
     /* Outport: '<Root>/Tm_rr' */
-    *rtY_Tm_rr = 55.0;
+    *rtY_Tm_rr = rtU_Tm_rl;
   } else if (rtb_delta_F < 0.0) {
-    /* Outport: '<Root>/Tm_rr' */
+    /* Switch: '<S4>/Switch' incorporates:
+     *  Constant: '<S1>/Constant2'
+     *  Outport: '<Root>/Tm_rr'
+     */
     *rtY_Tm_rr = 0.0;
   } else {
-    /* Outport: '<Root>/Tm_rr' */
+    /* Outport: '<Root>/Tm_rr' incorporates:
+     *  Switch: '<S4>/Switch'
+     */
     *rtY_Tm_rr = rtb_delta_F;
   }
 
-  /* End of Saturate: '<S2>/Right_sat' */
+  /* End of Switch: '<S4>/Switch2' */
 
-  /* Saturate: '<S2>/Left_sat' */
-  if (rtb_T_diff > 55.0) {
+  /* Switch: '<S3>/Switch2' incorporates:
+   *  Constant: '<S1>/Constant1'
+   *  Inport: '<Root>/Tmax_rr'
+   *  RelationalOperator: '<S3>/LowerRelop1'
+   *  RelationalOperator: '<S3>/UpperRelop'
+   *  Switch: '<S3>/Switch'
+   */
+  if (rtb_T_diff_p > rtU_Tm_rr) {
     /* Outport: '<Root>/Tm_rl' */
-    *rtY_Tm_rl = 55.0;
-  } else if (rtb_T_diff < 0.0) {
-    /* Outport: '<Root>/Tm_rl' */
+    *rtY_Tm_rl = rtU_Tm_rr;
+  } else if (rtb_T_diff_p < 0.0) {
+    /* Switch: '<S3>/Switch' incorporates:
+     *  Constant: '<S1>/Constant1'
+     *  Outport: '<Root>/Tm_rl'
+     */
     *rtY_Tm_rl = 0.0;
   } else {
-    /* Outport: '<Root>/Tm_rl' */
-    *rtY_Tm_rl = rtb_T_diff;
+    /* Outport: '<Root>/Tm_rl' incorporates:
+     *  Switch: '<S3>/Switch'
+     */
+    *rtY_Tm_rl = rtb_T_diff_p;
   }
 
-  /* End of Saturate: '<S2>/Left_sat' */
+  /* End of Switch: '<S3>/Switch2' */
 
-  /* Update for DiscreteIntegrator: '<S44>/Integrator' */
-  rtDW->Integrator_DSTATE = 0.0005 * rtb_IProdOut + rtb_ZeroGain;
+  /* Update for DiscreteIntegrator: '<S47>/Integrator' */
+  rtDW->Integrator_DSTATE = 0.0005 * rtb_IProdOut + rtb_SumFdbk;
 }
 
 /* Model initialize function */
 void Torque_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
   *rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl, real_T *rtU_yaw_rate,
-  real_T *rtU_Steeringangle, real_T *rtU_Brake, real_T *rtY_Tm_rr, real_T
-  *rtY_Tm_rl)
+  real_T *rtU_Steeringangle, real_T *rtU_Brake, real_T *rtU_Tm_rl, real_T
+  *rtU_Tm_rr, real_T *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr, real_T *
+  rtY_Tm_rl)
 {
   DW *rtDW = rtM->dwork;
 
@@ -312,12 +386,16 @@ void Torque_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
   *rtU_yaw_rate = 0.0;
   *rtU_Steeringangle = 0.0;
   *rtU_Brake = 0.0;
+  *rtU_Tm_rl = 0.0;
+  *rtU_Tm_rr = 0.0;
+  *rtU_map_tv = 0.0;
+  *rtU_map_sc = 0.0;
 
   /* external outputs */
-  (*rtY_Tm_rr) = 0.0;
-  (*rtY_Tm_rl) = 0.0;
+  *rtY_Tm_rr = 0.0;
+  *rtY_Tm_rl = 0.0;
 
-  /* InitializeConditions for DiscreteIntegrator: '<S44>/Integrator' */
+  /* InitializeConditions for DiscreteIntegrator: '<S47>/Integrator' */
   rtDW->Integrator_DSTATE = 0.0;
 }
 

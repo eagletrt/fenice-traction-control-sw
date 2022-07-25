@@ -9,10 +9,14 @@ BUILD_DIR := ./build
 # --------------------------------- Variables ----------------------------------
 
 # Target executables (main program and model servers)
-ALL_TARGETS := fenice-traction-control libctrl-sc.so libctrl-tv.so libctrl-all.so libctrl-no.so
+ALL_TARGETS := fenice-traction-control libctrl-ve.so libctrl-sc.so libctrl-tv.so libctrl-all.so libctrl-no.so
 
 # Matlab models base directory
 MATLAB_ROOT := ./matlab-model-code
+
+# Velocity Estimation model source
+MODEL_VE_DIR   := $(MATLAB_ROOT)/Velocity_Estimation_ert_rtw
+MODEL_VE_SRCS  := $(addprefix $(MODEL_VE_DIR)/, Velocity_Estimation.c Velocity_Estimation_data.c)
 
 # Slip-Control model source
 MODEL_SC_DIR   := $(MATLAB_ROOT)/Slip_ert_rtw
@@ -32,9 +36,14 @@ MODEL_NO_SRCS  := $(addprefix $(MODEL_NO_DIR)/, No.c)
 
 # Main program source files
 MAIN_SRC_DIR := ./src
-MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c ../micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c)
+MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c ../micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c)
 
 # ------------------------------- Build targets --------------------------------
+
+# Build target for the velocity-estimation library
+$(BUILD_DIR)/libctrl-ve.so: $(MODEL_VE_SRCS)
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT) -I$(MODEL_VE_DIR) $^ -o $@ $(LDFLAGS)
 
 # Build target for the slip-control library
 $(BUILD_DIR)/libctrl-sc.so: $(MODEL_SC_SRCS)

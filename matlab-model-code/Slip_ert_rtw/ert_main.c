@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Slip'.
  *
- * Model version                  : 3.5
- * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Sat Apr  2 09:26:59 2022
+ * Model version                  : 5.241
+ * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
+ * C/C++ source code generated on : Sat May 21 16:03:14 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -20,9 +20,8 @@
  */
 
 #include <stddef.h>
-#include <stdio.h>              /* This ert_main.c example uses printf/fflush */
-#include "Slip.h"                      /* Model's header file */
-#include "rtwtypes.h"
+#include <stdio.h>            /* This example main program uses printf/fflush */
+#include "Slip.h"                      /* Model header file */
 
 static RT_MODEL rtM_;
 static RT_MODEL *const rtMPtr = &rtM_; /* Real-time model */
@@ -48,6 +47,18 @@ static real_T rtU_Steeringangle;
 
 /* '<Root>/Brake' */
 static real_T rtU_Brake;
+
+/* '<Root>/Tmax_rl' */
+static real_T rtU_Tm_rl;
+
+/* '<Root>/Tmax_rr' */
+static real_T rtU_Tm_rr;
+
+/* '<Root>/map_tv' */
+static real_T rtU_map_tv;
+
+/* '<Root>/map_sc' */
+static real_T rtU_map_sc;
 
 /* '<Root>/Tm_rr' */
 static real_T rtY_Tm_rr;
@@ -87,7 +98,8 @@ void rt_OneStep(RT_MODEL *const rtM)
 
   /* Step the model */
   Slip_step(rtM, rtU_Driver_req, rtU_u_bar, rtU_omega_rr, rtU_omega_rl,
-            rtU_yaw_rate, rtU_Brake, &rtY_Tm_rr, &rtY_Tm_rl);
+            rtU_yaw_rate, rtU_Brake, rtU_Tm_rl, rtU_Tm_rr, rtU_map_sc,
+            &rtY_Tm_rr, &rtY_Tm_rl);
 
   /* Get model outputs here */
 
@@ -100,9 +112,9 @@ void rt_OneStep(RT_MODEL *const rtM)
 }
 
 /*
- * The example "main" function illustrates what is required by your
+ * The example main function illustrates what is required by your
  * application code to initialize, execute, and terminate the generated code.
- * Attaching rt_OneStep to a real-time clock is target specific.  This example
+ * Attaching rt_OneStep to a real-time clock is target specific. This example
  * illustrates how you do this relative to initializing the model.
  */
 int_T main(int_T argc, const char *argv[])
@@ -118,12 +130,12 @@ int_T main(int_T argc, const char *argv[])
 
   /* Initialize model */
   Slip_initialize(rtM, &rtU_Driver_req, &rtU_u_bar, &rtU_omega_rr, &rtU_omega_rl,
-                  &rtU_yaw_rate, &rtU_Steeringangle, &rtU_Brake, &rtY_Tm_rr,
-                  &rtY_Tm_rl);
+                  &rtU_yaw_rate, &rtU_Steeringangle, &rtU_Brake, &rtU_Tm_rl,
+                  &rtU_Tm_rr, &rtU_map_tv, &rtU_map_sc, &rtY_Tm_rr, &rtY_Tm_rl);
 
   /* Attach rt_OneStep to a timer or interrupt service routine with
-   * period 0.001 seconds (the model's base sample time) here.  The
-   * call syntax for rt_OneStep is
+   * period 0.001 seconds (base rate of the model) here.
+   * The call syntax for rt_OneStep is
    *
    *  rt_OneStep(rtM);
    */
@@ -132,10 +144,9 @@ int_T main(int_T argc, const char *argv[])
          "To change this behavior select the 'MAT-file logging' option.\n");
   fflush((NULL));
   while (rtmGetErrorStatus(rtM) == (NULL)) {
-    /*  Perform other application tasks here */
+    /*  Perform application tasks here */
   }
 
-  /* Disable rt_OneStep() here */
   return 0;
 }
 

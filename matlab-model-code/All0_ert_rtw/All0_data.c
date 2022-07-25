@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'All0'.
  *
- * Model version                  : 3.3
- * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Mon Mar 14 22:22:09 2022
+ * Model version                  : 5.241
+ * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
+ * C/C++ source code generated on : Sat May 21 16:02:45 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -23,62 +23,70 @@
 
 /* Constant parameters (default storage) */
 const ConstP rtConstP = {
+  /* Pooled Parameter (Expression: [0 1])
+   * Referenced by:
+   *   '<S2>/1-D Lookup Table2'
+   *   '<S10>/1-D Lookup Table2'
+   *   '<S65>/1-D Lookup Table2'
+   *   '<S66>/1-D Lookup Table1'
+   */
+  { 0.0, 1.0 },
+
   /* Pooled Parameter (Expression: sc_sched.Kp)
    * Referenced by:
-   *   '<S3>/1-D Lookup Table'
-   *   '<S4>/1-D Lookup Table'
+   *   '<S65>/1-D Lookup Table'
+   *   '<S66>/1-D Lookup Table2'
    */
-  { 121.25, 157.1875, 157.1875, 157.1875, 157.1875, 157.1875, 157.1875, 157.1875,
-    157.1875, 157.1875, 100.0, 100.0, 110.0, 125.0 },
+  { 90.1086993951195, 97.706766136813, 97.779654209522, 97.7652517570111,
+    97.0727083701121, 94.532403849043, 90.8074596427232, 90.0, 90.0, 90.0 },
 
   /* Pooled Parameter (Expression: sc_sched.speed)
    * Referenced by:
-   *   '<S3>/1-D Lookup Table'
-   *   '<S3>/1-D Lookup Table1'
-   *   '<S4>/1-D Lookup Table'
-   *   '<S4>/1-D Lookup Table1'
+   *   '<S65>/1-D Lookup Table'
+   *   '<S65>/1-D Lookup Table1'
+   *   '<S66>/1-D Lookup Table2'
+   *   '<S66>/1-D Lookup Table3'
    */
-  { 0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0,
-    120.0, 130.0 },
+  { 0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0 },
 
   /* Expression: TV.KusT.K_us
-   * Referenced by: '<S22>/K_us_table'
+   * Referenced by: '<S9>/K_us_table'
    */
   { -5.6E-5, -0.00065, -0.000739, -0.000691, -0.000489, -0.000117, 0.0003,
     0.000657, 0.000908, 0.001289 },
 
   /* Expression: TV.KusT.u_vals
-   * Referenced by: '<S22>/K_us_table'
+   * Referenced by: '<S9>/K_us_table'
    */
   { 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0 },
 
   /* Expression: TV.PID.Kp_vals
-   * Referenced by: '<S23>/P_table'
+   * Referenced by: '<S10>/P_table'
    */
-  { 2001.687489, 3185.736082, 3712.084946, 4002.201574, 4185.729139, 4305.803753,
-    4374.388334, 4396.305437, 4433.758076 },
+  { 725.778388, 714.991781, 717.127171, 725.372387, 735.915544, 745.859577,
+    753.080441, 756.062299 },
 
   /* Pooled Parameter (Expression: TV.PID.u_vals)
    * Referenced by:
-   *   '<S23>/I_table'
-   *   '<S23>/P_table'
+   *   '<S10>/I_table'
+   *   '<S10>/P_table'
    */
   { 5.555556, 8.333333, 11.111111, 13.888889, 16.666667, 19.444444, 22.222222,
-    25.0, 27.777778 },
+    25.0 },
 
   /* Expression: TV.PID.Ki_vals
-   * Referenced by: '<S23>/I_table'
+   * Referenced by: '<S10>/I_table'
    */
-  { 42277.068811, 31584.176095, 24190.556179, 19108.01705, 15596.686574,
-    13229.730785, 11701.207242, 10600.614187, 8496.755918 },
+  { 62510.227254, 42204.626597, 31989.404929, 25716.89812, 21375.905604,
+    18122.799519, 15544.254837, 13367.430797 },
 
   /* Pooled Parameter (Expression: sc_sched.Ki)
    * Referenced by:
-   *   '<S3>/1-D Lookup Table1'
-   *   '<S4>/1-D Lookup Table1'
+   *   '<S65>/1-D Lookup Table1'
+   *   '<S66>/1-D Lookup Table3'
    */
-  { 37.5, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625,
-    50.0, 50.0, 51.875, 45.0 }
+  { 20.0122411565707, 23.9799258614183, 24.0671225380504, 24.1427953562211,
+    23.6765451970367, 21.6213330838734, 20.0460125761758, 20.0, 20.0, 20.0 }
 };
 
 /*

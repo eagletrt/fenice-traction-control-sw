@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Slip'.
  *
- * Model version                  : 3.5
- * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Sat Apr  2 09:26:59 2022
+ * Model version                  : 5.241
+ * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
+ * C/C++ source code generated on : Sat May 21 16:03:14 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -23,31 +23,37 @@
 
 /* Constant parameters (default storage) */
 const ConstP rtConstP = {
+  /* Pooled Parameter (Expression: [0 1])
+   * Referenced by:
+   *   '<S4>/1-D Lookup Table2'
+   *   '<S5>/1-D Lookup Table2'
+   */
+  { 0.0, 1.0 },
+
   /* Pooled Parameter (Expression: sc_sched.Kp)
    * Referenced by:
-   *   '<S2>/1-D Lookup Table'
-   *   '<S3>/1-D Lookup Table'
+   *   '<S4>/1-D Lookup Table'
+   *   '<S5>/1-D Lookup Table'
    */
-  { 121.25, 157.1875, 157.1875, 157.1875, 157.1875, 157.1875, 157.1875, 157.1875,
-    157.1875, 157.1875, 100.0, 100.0, 110.0, 125.0 },
+  { 90.1086993951195, 97.706766136813, 97.779654209522, 97.7652517570111,
+    97.0727083701121, 94.532403849043, 90.8074596427232, 90.0, 90.0, 90.0 },
 
   /* Pooled Parameter (Expression: sc_sched.speed)
    * Referenced by:
-   *   '<S2>/1-D Lookup Table'
-   *   '<S2>/1-D Lookup Table1'
-   *   '<S3>/1-D Lookup Table'
-   *   '<S3>/1-D Lookup Table1'
+   *   '<S4>/1-D Lookup Table'
+   *   '<S4>/1-D Lookup Table1'
+   *   '<S5>/1-D Lookup Table'
+   *   '<S5>/1-D Lookup Table1'
    */
-  { 0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0,
-    120.0, 130.0 },
+  { 0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0 },
 
   /* Pooled Parameter (Expression: sc_sched.Ki)
    * Referenced by:
-   *   '<S2>/1-D Lookup Table1'
-   *   '<S3>/1-D Lookup Table1'
+   *   '<S4>/1-D Lookup Table1'
+   *   '<S5>/1-D Lookup Table1'
    */
-  { 37.5, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625, 20.625,
-    50.0, 50.0, 51.875, 45.0 }
+  { 20.0122411565707, 23.9799258614183, 24.0671225380504, 24.1427953562211,
+    23.6765451970367, 21.6213330838734, 20.0460125761758, 20.0, 20.0, 20.0 }
 };
 
 /*

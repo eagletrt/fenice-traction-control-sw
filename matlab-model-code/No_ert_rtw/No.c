@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'No'.
  *
- * Model version                  : 3.3
- * Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
- * C/C++ source code generated on : Mon Mar 14 22:27:51 2022
+ * Model version                  : 5.241
+ * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
+ * C/C++ source code generated on : Sat May 21 16:04:53 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -20,6 +20,7 @@
  */
 
 #include "No.h"
+#include "rtwtypes.h"
 
 /*===========*
  * Constants *
@@ -52,21 +53,22 @@
 #endif
 
 /* Model step function */
-void No_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T *rtY_Tm_rr,
-             real_T *rtY_Tm_rl)
+void No_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_Tm_rl,
+             real_T rtU_Tm_rr, real_T *rtY_Tm_rr, real_T *rtY_Tm_rl)
 {
-  real_T rtb_Tm_rr;
-
-  /* Gain: '<S1>/Max motor torque' incorporates:
+  /* Outport: '<Root>/Tm_rr' incorporates:
+   *  Inport: '<Root>/Tmax_rr'
    *  Inport: '<Root>/driver_request'
+   *  Product: '<S1>/Product'
    */
-  rtb_Tm_rr = 55.0 * rtU_Driver_req;
+  *rtY_Tm_rr = rtU_Driver_req * rtU_Tm_rr;
 
-  /* Outport: '<Root>/Tm_rr' */
-  *rtY_Tm_rr = rtb_Tm_rr;
-
-  /* Outport: '<Root>/Tm_rl' */
-  *rtY_Tm_rl = rtb_Tm_rr;
+  /* Outport: '<Root>/Tm_rl' incorporates:
+   *  Inport: '<Root>/Tmax_rl'
+   *  Inport: '<Root>/driver_request'
+   *  Product: '<S1>/Product1'
+   */
+  *rtY_Tm_rl = rtU_Tm_rl * rtU_Driver_req;
   UNUSED_PARAMETER(rtM);
 }
 
@@ -74,7 +76,9 @@ void No_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T *rtY_Tm_rr,
 void No_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
                    *rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl,
                    real_T *rtU_yaw_rate, real_T *rtU_Steeringangle, real_T
-                   *rtU_Brake, real_T *rtY_Tm_rr, real_T *rtY_Tm_rl)
+                   *rtU_Brake, real_T *rtU_Tm_rl, real_T *rtU_Tm_rr, real_T
+                   *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr, real_T
+                   *rtY_Tm_rl)
 {
   /* Registration code */
 
@@ -89,10 +93,14 @@ void No_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
   *rtU_yaw_rate = 0.0;
   *rtU_Steeringangle = 0.0;
   *rtU_Brake = 0.0;
+  *rtU_Tm_rl = 0.0;
+  *rtU_Tm_rr = 0.0;
+  *rtU_map_tv = 0.0;
+  *rtU_map_sc = 0.0;
 
   /* external outputs */
-  (*rtY_Tm_rr) = 0.0;
-  (*rtY_Tm_rl) = 0.0;
+  *rtY_Tm_rr = 0.0;
+  *rtY_Tm_rl = 0.0;
   UNUSED_PARAMETER(rtM);
 }
 
