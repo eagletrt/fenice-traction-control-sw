@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'No'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.254
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:04:53 2022
+ * C/C++ source code generated on : Tue Jul 26 10:36:10 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -50,13 +50,25 @@ struct tag_RTM {
 };
 
 /* Model entry point functions */
-extern void No_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
-  *rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl, real_T *rtU_yaw_rate,
-  real_T *rtU_Steeringangle, real_T *rtU_Brake, real_T *rtU_Tm_rl, real_T
-  *rtU_Tm_rr, real_T *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr, real_T *
-  rtY_Tm_rl);
-extern void No_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_Tm_rl,
-                    real_T rtU_Tm_rr, real_T *rtY_Tm_rr, real_T *rtY_Tm_rl);
+extern void No_initialize(RT_MODEL *const rtM);
+extern void No_step(RT_MODEL *const rtM);
+
+/* Exported data declaration */
+
+/* Data with Exported storage */
+extern real_T rtDriver_req;            /* '<Root>/driver_request' */
+extern real_T rtSteeringangle;         /* '<Root>/delta' */
+extern real_T rtTm_rl;                 /* '<Root>/Tmax_rl' */
+extern real_T rtTm_rl_a;               /* '<Root>/Tm_rl' */
+extern real_T rtTm_rr;                 /* '<Root>/Tmax_rr' */
+extern real_T rtTm_rr_m;               /* '<Root>/Tm_rr' */
+extern real_T rtomega_rl;              /* '<Root>/omega_rl' */
+extern real_T rtomega_rr;              /* '<Root>/omega_rr' */
+extern real_T rtsignal11;              /* '<Root>/map_tv' */
+extern real_T rtsignal12;              /* '<Root>/map_sc' */
+extern real_T rtsignal13;              /* '<Root>/Brake' */
+extern real_T rtu_bar;                 /* '<Root>/u_bar' */
+extern real_T rtyaw_rate;              /* '<Root>/Omega' */
 
 /*-
  * The generated code includes comments that allow you to trace directly

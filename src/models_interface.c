@@ -1,155 +1,67 @@
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "models_interface.h"
-#include "matlab_shitty_datatypes.h"
 
 
-Matlab_DW _CTRL_DW;
-Matlab_RTM _CTRL_rtm = { NULL, &_CTRL_DW };
+/* Ridefinition of Matlab's data structure for the model */
+typedef struct {
+  double Integrator_DSTATE;            /* '<S47>/Integrator' */
+  double DiscreteTimeIntegrator1_DSTATE;/* '<S79>/Discrete-Time Integrator1' */
+  double DiscreteTimeIntegrator1_DSTAT_k;/* '<S71>/Discrete-Time Integrator1' */
+  uint32_t m_bpIndex;                  /* '<S66>/1-D Lookup Table3' */
+  uint32_t m_bpIndex_h;                /* '<S65>/1-D Lookup Table1' */
+  uint32_t m_bpIndex_f;                /* '<S66>/1-D Lookup Table2' */
+  uint32_t m_bpIndex_k;                /* '<S65>/1-D Lookup Table' */
+  int8_t DiscreteTimeIntegrator1_PrevRes;/* '<S79>/Discrete-Time Integrator1' */
+  int8_t DiscreteTimeIntegrator1_PrevR_o;/* '<S71>/Discrete-Time Integrator1' */
+} Matlab_DW;
 
+/* Real time model data struture */
+typedef struct {
+    char *errorStatus;
+    Matlab_DW *dwork;
+} Matlab_RTM;
+
+/* Pointers to the global variables in the velocity estimation library namespace */
+double *_CTRL_dreq, *_CTRL_delta, *_CTRL_tmax_rl, *_CTRL_tmax_rr, *_CTRL_omega_rl, *_CTRL_omega_rr,
+       *_CTRL_map_tv, *_CTRL_map_sc, *_CTRL_brake, *_CTRL_bar, *_CTRL_omega,
+       *_CTRL_t_rl, *_CTRL_t_rr;
+
+
+Matlab_DW _CTRL_DW = { 0U };
+Matlab_RTM _CTRL_rt_model = { NULL, &_CTRL_DW };
+void (*_CTRL_init_model_fn) (Matlab_RTM *);
+void (*_CTRL_step_model_fn) (Matlab_RTM *);
+void *_CTRL_lib_handle = NULL;
 CTRL_MODE _CTRL_curr_mode = CTRL_NONE;
-bool _CTRL_is_model_initialized = false;
-
-void (*_CTRL_model_sc_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*_CTRL_model_sc_step_fn) (Matlab_RTM*, double, double, double, double, double, double, double, double*, double*);
-void *_CTRL_libsc_handle = NULL;
-
-void (*_CTRL_model_tv_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*_CTRL_model_tv_step_fn) (Matlab_RTM*, double, double, double, double, double, double, double, double*, double*);
-void *_CTRL_libtv_handle = NULL;
-
-void (*_CTRL_model_all_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*_CTRL_model_all_step_fn) (Matlab_RTM*, double, double, double, double, double, double, double, double*, double*);
-void *_CTRL_liball_handle = NULL;
-
-void (*_CTRL_model_no_init_fn) (Matlab_RTM*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
-void (*_CTRL_model_no_step_fn) (Matlab_RTM*, double, double*, double*);
-void *_CTRL_libno_handle = NULL;
 
 
-void _unload_all_libs();
 void _load_model_lib();
-void _load_lib_syms();
+bool _load_lib_syms();
 
 
-CTRL_ModelOutputTypeDef CTRL_step_model(CTRL_ModelInputTypeDef data_in) {
-    CTRL_ModelOutputTypeDef data_out;
+void CTRL_step_model(CTRL_ModelInputTypeDef *data_in, CTRL_ModelOutputTypeDef *data_out) {
+    /* Copy over the input data */
+    *_CTRL_dreq     = data_in->dreq;
+    *_CTRL_delta    = data_in->delta;
+    *_CTRL_tmax_rl  = data_in->tmax_rl;
+    *_CTRL_tmax_rr  = data_in->tmax_rr;
+    *_CTRL_omega_rl = data_in->omega_rl;
+    *_CTRL_omega_rr = data_in->omega_rr;
+    *_CTRL_map_tv   = data_in->map_tv;
+    *_CTRL_map_sc   = data_in->map_sc;
+    *_CTRL_brake    = data_in->brake;
+    *_CTRL_bar      = data_in->bar;
+    *_CTRL_omega    = data_in->omega;
 
-    switch (_CTRL_curr_mode) {
-        case (CTRL_NONE):
-            if (!_CTRL_is_model_initialized)
-                (*_CTRL_model_no_init_fn)(
-                    &_CTRL_rtm,
-                    &(data_in.rtU_Driver_req),
-                    &(data_in.rtU_u_bar),
-                    &(data_in.rtU_omega_rr),
-                    &(data_in.rtU_omega_rl),
-                    &(data_in.rtU_yaw_rate),
-                    &(data_in.rtU_Steeringangle),
-                    &(data_in.rtU_Brake),
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );
-            else
-                (*_CTRL_model_no_step_fn)(
-                    &_CTRL_rtm,
-                    data_in.rtU_Driver_req,
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );
-            break;
-        case (CTRL_SC):
-            if (!_CTRL_is_model_initialized)
-                (*_CTRL_model_sc_init_fn)(
-                    &_CTRL_rtm,
-                    &(data_in.rtU_Driver_req),
-                    &(data_in.rtU_u_bar),
-                    &(data_in.rtU_omega_rr),
-                    &(data_in.rtU_omega_rl),
-                    &(data_in.rtU_yaw_rate),
-                    &(data_in.rtU_Steeringangle),
-                    &(data_in.rtU_Brake),
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );
-            else
-                (*_CTRL_model_sc_step_fn)(
-                    &_CTRL_rtm,
-                    data_in.rtU_Driver_req,
-                    data_in.rtU_u_bar,
-                    data_in.rtU_omega_rr,
-                    data_in.rtU_omega_rl,
-                    data_in.rtU_yaw_rate,
-                    data_in.rtU_Steeringangle,
-                    data_in.rtU_Brake,
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );
-            break;
-        case (CTRL_TV):
-            if (!_CTRL_is_model_initialized)
-                (*_CTRL_model_tv_init_fn)(
-                    &_CTRL_rtm,
-                    &(data_in.rtU_Driver_req),
-                    &(data_in.rtU_u_bar),
-                    &(data_in.rtU_omega_rr),
-                    &(data_in.rtU_omega_rl),
-                    &(data_in.rtU_yaw_rate),
-                    &(data_in.rtU_Steeringangle),
-                    &(data_in.rtU_Brake),
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );
-            else
-                (*_CTRL_model_tv_step_fn)(
-                    &_CTRL_rtm,
-                    data_in.rtU_Driver_req,
-                    data_in.rtU_u_bar,
-                    data_in.rtU_omega_rr,
-                    data_in.rtU_omega_rl,
-                    data_in.rtU_yaw_rate,
-                    data_in.rtU_Steeringangle,
-                    data_in.rtU_Brake,
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );
-            break;
-        case (CTRL_ALL): 
-            if (!_CTRL_is_model_initialized)
-                (*_CTRL_model_all_init_fn)(
-                    &_CTRL_rtm,
-                    &(data_in.rtU_Driver_req),
-                    &(data_in.rtU_u_bar),
-                    &(data_in.rtU_omega_rr),
-                    &(data_in.rtU_omega_rl),
-                    &(data_in.rtU_yaw_rate),
-                    &(data_in.rtU_Steeringangle),
-                    &(data_in.rtU_Brake),
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );
-            else
-                (*_CTRL_model_all_step_fn)(
-                    &_CTRL_rtm,
-                    data_in.rtU_Driver_req,
-                    data_in.rtU_u_bar,
-                    data_in.rtU_omega_rr,
-                    data_in.rtU_omega_rl,
-                    data_in.rtU_yaw_rate,
-                    data_in.rtU_Steeringangle,
-                    data_in.rtU_Brake,
-                    &(data_out.rtY_Tm_rr),
-                    &(data_out.rtY_Tm_rl)
-                );     
-            break;
-        default:
-            printf("Error stepping model - unknown CTRL_MODE: %d\n", _CTRL_curr_mode);
-            break;
-    }
+    /* Step the model */
+    _CTRL_step_model_fn(&_CTRL_rt_model);
 
-    _CTRL_is_model_initialized = true;
-    return data_out;
+    /* Copy back the output data */
+    data_out->tm_rl = *_CTRL_t_rl;
+    data_out->tm_rr = *_CTRL_t_rr;
 }
 
 /**
@@ -157,30 +69,10 @@ CTRL_ModelOutputTypeDef CTRL_step_model(CTRL_ModelInputTypeDef data_in) {
  */
 void CTRL_change_mode(CTRL_MODE new_mode) {
     _CTRL_curr_mode = new_mode;
-    _CTRL_is_model_initialized = false;
 
-    /* Ensure all other libs are unloaded to avoid namespace conflicts */
-    _unload_all_libs();
-
-    /* Load current model library */
+    /* Load current model library and its symbols */
     _load_model_lib();
-
-    /* Load current model's init and step functions */
     _load_lib_syms();
-}
-
-/**
- * @brief Make sure that all dynamic libraries are unloaded
- */
-void _unload_all_libs() {
-    if (_CTRL_libsc_handle)
-        dlclose(_CTRL_libsc_handle);
-    if (_CTRL_libtv_handle)
-        dlclose(_CTRL_libtv_handle);
-    if (_CTRL_liball_handle)
-        dlclose(_CTRL_liball_handle);
-    if (_CTRL_libno_handle)
-        dlclose(_CTRL_libno_handle);
 }
 
 /**
@@ -188,37 +80,35 @@ void _unload_all_libs() {
  */
 void _load_model_lib() {
     char *lib_path;     /* Filesystem path of the DL to load */
-    void **lib_handle;  /* Pointer to the variable that will contaian the DL handle */
 
     switch (_CTRL_curr_mode) {
         case (CTRL_NONE):
             lib_path = "./libctrl-no.so";
-            lib_handle = &_CTRL_libno_handle;
             break;
         case (CTRL_SC):
             lib_path = "./libctrl-sc.so";
-            lib_handle = &_CTRL_libsc_handle;
             break;
         case (CTRL_TV):
             lib_path = "./libctrl-tv.so";
-            lib_handle = &_CTRL_libtv_handle;
             break;
         case (CTRL_ALL):
             lib_path = "./libctrl-all.so";
-            lib_handle = &_CTRL_liball_handle;
             break;
         default:
             printf("Error loading dynamic library - unknown CTRL_MODE: %d\n", _CTRL_curr_mode);
             printf("Warning: reverting to CTRL_NONE mode as a failsafe.\n");
             lib_path = "./libctrl-no.so";
-            lib_handle = &_CTRL_libno_handle;
             break;
     }
+
+    /* Make sure no other model library is loaded */
+    if (_CTRL_lib_handle)
+        dlclose(_CTRL_lib_handle);
     
     /* Attempt to load the dynamic library */
-    (*lib_handle) = dlopen(lib_path, RTLD_NOW);
+    _CTRL_lib_handle = dlopen(lib_path, RTLD_NOW);
 
-    if (*lib_handle)
+    if (_CTRL_lib_handle)
         printf("Successfully switched control mode\n");
     else
         printf("Error loading dynamic library: %s\n", dlerror());
@@ -227,29 +117,75 @@ void _load_model_lib() {
 /**
  * @brief Load the function pointers to the init and step methods of the currently in-use model
  */
-void _load_lib_syms() {
+bool _load_lib_syms() {
+    char *i_fn_sym, *s_fn_sym;
+
     switch (_CTRL_curr_mode) {
         case (CTRL_NONE):
-            _CTRL_model_no_init_fn = dlsym(_CTRL_libno_handle, "No_initialize");
-            _CTRL_model_no_step_fn = dlsym(_CTRL_libno_handle, "No_step");
+            i_fn_sym = "No_initialize";
+            s_fn_sym = "No_step";
             break;
         case (CTRL_SC):
-            _CTRL_model_sc_init_fn = dlsym(_CTRL_libsc_handle, "Slip_initialize");
-            _CTRL_model_sc_step_fn = dlsym(_CTRL_libsc_handle, "Slip_step");
+            i_fn_sym = "Slip_initialize";
+            s_fn_sym = "Slip_step";
             break;
         case (CTRL_TV):
-            _CTRL_model_tv_init_fn = dlsym(_CTRL_libtv_handle, "Torque_initialize");
-            _CTRL_model_tv_step_fn = dlsym(_CTRL_libtv_handle, "Torque_step");
+            i_fn_sym = "Torque_initialize";
+            s_fn_sym = "Torque_step";
             break;
         case (CTRL_ALL):
-            _CTRL_model_all_init_fn = dlsym(_CTRL_liball_handle, "All0_initialize");
-            _CTRL_model_all_step_fn = dlsym(_CTRL_liball_handle, "All0_step");       
+            i_fn_sym = "All0_initialize";
+            s_fn_sym = "All0_step";       
             break;
         default:
             printf("Error loading dynamic library symbols - unknown CTRL_MODE: %d\n", _CTRL_curr_mode);
-            break;
+            return false;
     }
 
-    if (dlerror())
+    /* Load functions */
+    _CTRL_init_model_fn = dlsym(_CTRL_lib_handle, i_fn_sym);
+    _CTRL_step_model_fn = dlsym(_CTRL_lib_handle, s_fn_sym);
+
+    if (dlerror()) {
         printf("Error: %s\n", dlerror());
+        return false;
+    }
+
+    /* Load global variables */
+    _CTRL_dreq     = dlsym(_CTRL_lib_handle, "rtDriver_req");
+    _CTRL_delta    = dlsym(_CTRL_lib_handle, "rtSteeringangle");
+    _CTRL_tmax_rl  = dlsym(_CTRL_lib_handle, "rtTm_rl");
+    _CTRL_tmax_rr  = dlsym(_CTRL_lib_handle, "rtTm_rr");
+    _CTRL_omega_rl = dlsym(_CTRL_lib_handle, "rtomega_rl");
+    _CTRL_omega_rr = dlsym(_CTRL_lib_handle, "rtomega_rr");
+    _CTRL_map_tv   = dlsym(_CTRL_lib_handle, "rtsignal11");
+    _CTRL_map_sc   = dlsym(_CTRL_lib_handle, "rtsignal12");
+    _CTRL_brake    = dlsym(_CTRL_lib_handle, "rtsignal13");
+    _CTRL_bar      = dlsym(_CTRL_lib_handle, "rtu_bar");
+    _CTRL_omega    = dlsym(_CTRL_lib_handle, "rtyaw_rate");
+    _CTRL_t_rl     = dlsym(_CTRL_lib_handle, "rtTm_rl_a");
+    _CTRL_t_rr     = dlsym(_CTRL_lib_handle, "rtTm_rr_a");
+
+    if (_CTRL_dreq && _CTRL_delta && _CTRL_tmax_rl && _CTRL_tmax_rr && _CTRL_omega_rl && _CTRL_omega_rr &&
+    _CTRL_map_tv && _CTRL_map_sc && _CTRL_brake && _CTRL_bar && _CTRL_omega &&
+    _CTRL_t_rl && _CTRL_t_rr) {
+        *_CTRL_dreq = 0.0;
+        *_CTRL_delta = 0.0;
+        *_CTRL_tmax_rl = 0.0;
+        *_CTRL_tmax_rr = 0.0;
+        *_CTRL_omega_rl = 0.0;
+        *_CTRL_omega_rr = 0.0;
+        *_CTRL_map_tv = 0.0;
+        *_CTRL_map_sc = 0.0;
+        *_CTRL_brake = 0.0;
+        *_CTRL_bar = 0.0;
+        *_CTRL_omega = 0.0;
+        *_CTRL_t_rl = 0.0;
+        *_CTRL_t_rr = 0.0;
+    } else {
+        printf("Error loading global variables: %s\n", dlerror());
+        return false;
+    }
+
+    return true;
 }

@@ -15,17 +15,16 @@ typedef struct {
     double omega_rr;
     double ax_g;
     double torque_map;
-} VES_DataIn;
+} VES_DataInTypeDef;
 
 typedef struct {
-    double u;
     double bar;
     double tmax_rr;
     double tmax_rl;
-} VES_DataOut;
+} VES_DataOutTypeDef;
 
 
 bool VES_init();
-void VES_step_model(VES_DataIn*, VES_DataOut*);
+void VES_step_model(VES_DataInTypeDef*, VES_DataOutTypeDef*);
 
 #endif

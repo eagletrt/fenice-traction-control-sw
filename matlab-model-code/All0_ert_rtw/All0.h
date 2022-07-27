@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'All0'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.254
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:02:45 2022
+ * C/C++ source code generated on : Tue Jul 26 10:41:27 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -87,12 +87,12 @@ typedef struct {
   /* Expression: TV.KusT.K_us
    * Referenced by: '<S9>/K_us_table'
    */
-  real_T K_us_table_tableData[10];
+  real_T K_us_table_tableData[7];
 
   /* Expression: TV.KusT.u_vals
    * Referenced by: '<S9>/K_us_table'
    */
-  real_T K_us_table_bp01Data[10];
+  real_T K_us_table_bp01Data[7];
 
   /* Expression: TV.PID.Kp_vals
    * Referenced by: '<S10>/P_table'
@@ -129,17 +129,25 @@ struct tag_RTM {
 extern const ConstP rtConstP;
 
 /* Model entry point functions */
-extern void All0_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T *
-  rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl, real_T *rtU_yaw_rate,
-  real_T *rtU_Steeringangle, real_T *rtU_Brake, real_T *rtU_Tm_rl, real_T
-  *rtU_Tm_rr, real_T *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr, real_T *
-  rtY_Tm_rl);
-extern void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T
-                      rtU_u_bar, real_T rtU_omega_rr, real_T rtU_omega_rl,
-                      real_T rtU_yaw_rate, real_T rtU_Steeringangle, real_T
-                      rtU_Brake, real_T rtU_Tm_rl, real_T rtU_Tm_rr, real_T
-                      rtU_map_tv, real_T rtU_map_sc, real_T *rtY_Tm_rr, real_T
-                      *rtY_Tm_rl);
+extern void All0_initialize(RT_MODEL *const rtM);
+extern void All0_step(RT_MODEL *const rtM);
+
+/* Exported data declaration */
+
+/* Data with Exported storage */
+extern real_T rtDriver_req;            /* '<Root>/driver_request' */
+extern real_T rtSteeringangle;         /* '<Root>/delta' */
+extern real_T rtTm_rl;                 /* '<Root>/Tmax_rl' */
+extern real_T rtTm_rl_a;               /* '<Root>/Tm_rl' */
+extern real_T rtTm_rr;                 /* '<Root>/Tmax_rr' */
+extern real_T rtTm_rr_m;               /* '<Root>/Tm_rr' */
+extern real_T rtomega_rl;              /* '<Root>/omega_rl' */
+extern real_T rtomega_rr;              /* '<Root>/omega_rr' */
+extern real_T rtsignal11;              /* '<Root>/map_tv' */
+extern real_T rtsignal12;              /* '<Root>/map_sc' */
+extern real_T rtsignal13;              /* '<Root>/Brake' */
+extern real_T rtu_bar;                 /* '<Root>/u_bar' */
+extern real_T rtyaw_rate;              /* '<Root>/Omega' */
 
 /*-
  * These blocks were eliminated from the model due to optimizations:

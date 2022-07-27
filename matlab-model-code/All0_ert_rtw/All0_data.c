@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'All0'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.254
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:02:45 2022
+ * C/C++ source code generated on : Tue Jul 26 10:41:27 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -52,19 +52,18 @@ const ConstP rtConstP = {
   /* Expression: TV.KusT.K_us
    * Referenced by: '<S9>/K_us_table'
    */
-  { -5.6E-5, -0.00065, -0.000739, -0.000691, -0.000489, -0.000117, 0.0003,
-    0.000657, 0.000908, 0.001289 },
+  { 0.182957, 0.081065, 0.045234, 0.028612, 0.019731, 0.01455, 0.011396 },
 
   /* Expression: TV.KusT.u_vals
    * Referenced by: '<S9>/K_us_table'
    */
-  { 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0 },
+  { 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0 },
 
   /* Expression: TV.PID.Kp_vals
    * Referenced by: '<S10>/P_table'
    */
-  { 725.778388, 714.991781, 717.127171, 725.372387, 735.915544, 745.859577,
-    753.080441, 756.062299 },
+  { 1038.618629, 926.127599, 877.266978, 854.413214, 843.643018, 837.54139,
+    831.38508, 822.261418 },
 
   /* Pooled Parameter (Expression: TV.PID.u_vals)
    * Referenced by:
@@ -77,8 +76,8 @@ const ConstP rtConstP = {
   /* Expression: TV.PID.Ki_vals
    * Referenced by: '<S10>/I_table'
    */
-  { 62510.227254, 42204.626597, 31989.404929, 25716.89812, 21375.905604,
-    18122.799519, 15544.254837, 13367.430797 },
+  { 62511.5719, 42200.197344, 31974.408367, 25689.352244, 21341.477686,
+    18108.138404, 15588.628209, 13547.20095 },
 
   /* Pooled Parameter (Expression: sc_sched.Ki)
    * Referenced by:

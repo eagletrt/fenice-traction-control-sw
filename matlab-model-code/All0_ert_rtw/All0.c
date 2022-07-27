@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'All0'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.254
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:02:45 2022
+ * C/C++ source code generated on : Tue Jul 26 10:41:27 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -23,6 +23,22 @@
 #include "rtwtypes.h"
 #include <math.h>
 
+/* Exported data definition */
+
+/* Data with Exported storage */
+real_T rtDriver_req;                   /* '<Root>/driver_request' */
+real_T rtSteeringangle;                /* '<Root>/delta' */
+real_T rtTm_rl;                        /* '<Root>/Tmax_rl' */
+real_T rtTm_rl_a;                      /* '<Root>/Tm_rl' */
+real_T rtTm_rr;                        /* '<Root>/Tmax_rr' */
+real_T rtTm_rr_m;                      /* '<Root>/Tm_rr' */
+real_T rtomega_rl;                     /* '<Root>/omega_rl' */
+real_T rtomega_rr;                     /* '<Root>/omega_rr' */
+real_T rtsignal11;                     /* '<Root>/map_tv' */
+real_T rtsignal12;                     /* '<Root>/map_sc' */
+real_T rtsignal13;                     /* '<Root>/Brake' */
+real_T rtu_bar;                        /* '<Root>/u_bar' */
+real_T rtyaw_rate;                     /* '<Root>/Omega' */
 static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
   uint32_T maxIndex);
 static real_T look1_pbinlcapw(real_T u0, const real_T bp0[], const real_T table[],
@@ -177,11 +193,7 @@ static void Slip_est1(real_T rtu_omegaR, real_T rtu_u_bar, real_T rtu_Vlow,
 }
 
 /* Model step function */
-void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
-               real_T rtU_omega_rr, real_T rtU_omega_rl, real_T rtU_yaw_rate,
-               real_T rtU_Steeringangle, real_T rtU_Brake, real_T rtU_Tm_rl,
-               real_T rtU_Tm_rr, real_T rtU_map_tv, real_T rtU_map_sc, real_T
-               *rtY_Tm_rr, real_T *rtY_Tm_rl)
+void All0_step(RT_MODEL *const rtM)
 {
   DW *rtDW = rtM->dwork;
   real_T rtb_Add_g;
@@ -203,33 +215,32 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
   /* MATLAB Function: '<S2>/SteeringModel' incorporates:
    *  Inport: '<Root>/delta'
    */
-  rtb_IProdOut = pow(rtU_Steeringangle, 10.0);
-  rtb_SumFdbk = pow(rtU_Steeringangle, 9.0);
-  rtb_delta_F = pow(rtU_Steeringangle, 8.0);
-  rtb_T_rl = pow(rtU_Steeringangle, 7.0);
-  rtb_Switch2_a = pow(rtU_Steeringangle, 6.0);
-  rtb_Gain = pow(rtU_Steeringangle, 5.0);
-  rtb_Sum = pow(rtU_Steeringangle, 4.0);
-  rtb_Product = pow(rtU_Steeringangle, 3.0);
-  rtb_lambda = rtU_Steeringangle * rtU_Steeringangle;
+  rtb_IProdOut = pow(rtSteeringangle, 10.0);
+  rtb_SumFdbk = pow(rtSteeringangle, 9.0);
+  rtb_delta_F = pow(rtSteeringangle, 8.0);
+  rtb_T_rl = pow(rtSteeringangle, 7.0);
+  rtb_Switch2_a = pow(rtSteeringangle, 6.0);
+  rtb_Gain = pow(rtSteeringangle, 5.0);
+  rtb_Sum = pow(rtSteeringangle, 4.0);
+  rtb_Product = pow(rtSteeringangle, 3.0);
+  rtb_lambda = rtSteeringangle * rtSteeringangle;
   rtb_delta_F = (((((((((((-2.511353952E-8 * rtb_IProdOut + 1.204729921E-7 *
     rtb_SumFdbk) - 2.613187764E-7 * rtb_delta_F) + 1.437082334E-6 * rtb_T_rl) -
                         7.12221471E-6 * rtb_Switch2_a) + 4.68525841E-5 *
                        rtb_Gain) - 0.0001855092357 * rtb_Sum) + 0.001856824887 *
                      rtb_Product) - rtb_lambda * 0.006374606899) + 0.2126142315 *
-                   rtU_Steeringangle) + 3.3E-9) +
-                 ((((((((((2.5259036849999997E-8 * rtb_IProdOut + 1.206067049E-7
-    * rtb_SumFdbk) + 2.599089767E-7 * rtb_delta_F) + 1.435718737E-6 * rtb_T_rl)
-                        + 7.1264231E-6 * rtb_Switch2_a) + 4.685692282E-5 *
-                       rtb_Gain) + 0.0001855053075 * rtb_Sum) + 0.001856820364 *
-                     rtb_Product) + rtb_lambda * 0.006374607119) + 0.2126142321 *
-                   rtU_Steeringangle) - 3.3E-9)) / 2.0;
+                   rtSteeringangle) + 3.3E-9) + ((((((((((2.5259036849999997E-8 *
+    rtb_IProdOut + 1.206067049E-7 * rtb_SumFdbk) + 2.599089767E-7 * rtb_delta_F)
+    + 1.435718737E-6 * rtb_T_rl) + 7.1264231E-6 * rtb_Switch2_a) +
+    4.685692282E-5 * rtb_Gain) + 0.0001855053075 * rtb_Sum) + 0.001856820364 *
+    rtb_Product) + rtb_lambda * 0.006374607119) + 0.2126142321 * rtSteeringangle)
+    - 3.3E-9)) / 2.0;
 
   /* Lookup_n-D: '<S10>/1-D Lookup Table2' incorporates:
    *  Inport: '<Root>/map_tv'
    *  Lookup_n-D: '<S2>/1-D Lookup Table2'
    */
-  rtb_T_rl = look1_binlxpw(rtU_map_tv, rtConstP.pooled2, rtConstP.pooled2, 1U);
+  rtb_T_rl = look1_binlxpw(rtsignal11, rtConstP.pooled2, rtConstP.pooled2, 1U);
 
   /* Product: '<S10>/Product' incorporates:
    *  Constant: '<S10>/Constant'
@@ -244,15 +255,15 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Lookup_n-D: '<S9>/K_us_table'
    *  MATLAB Function: '<S9>/Yaw-Rate'
    */
-  rtb_IProdOut = rtb_delta_F * rtU_u_bar / (rtU_u_bar * rtU_u_bar *
-    look1_binlxpw(rtU_u_bar, rtConstP.K_us_table_bp01Data,
-                  rtConstP.K_us_table_tableData, 9U) + 1.53) - rtU_yaw_rate;
+  rtb_IProdOut = rtb_delta_F * rtu_bar / (rtu_bar * rtu_bar * look1_binlxpw
+    (rtu_bar, rtConstP.K_us_table_bp01Data, rtConstP.K_us_table_tableData, 6U) +
+    1.53) - rtyaw_rate;
 
   /* Product: '<S52>/PProd Out' incorporates:
    *  Inport: '<Root>/u_bar'
    *  Lookup_n-D: '<S10>/P_table'
    */
-  rtb_lambda = rtb_IProdOut * look1_binlxpw(rtU_u_bar, rtConstP.pooled9,
+  rtb_lambda = rtb_IProdOut * look1_binlxpw(rtu_bar, rtConstP.pooled9,
     rtConstP.P_table_tableData, 7U);
 
   /* Sum: '<S58>/Sum Fdbk' */
@@ -282,7 +293,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Inport: '<Root>/u_bar'
    *  Lookup_n-D: '<S10>/I_table'
    */
-  rtb_IProdOut *= look1_binlxpw(rtU_u_bar, rtConstP.pooled9,
+  rtb_IProdOut *= look1_binlxpw(rtu_bar, rtConstP.pooled9,
     rtConstP.I_table_tableData, 7U);
 
   /* Switch: '<S37>/Switch1' incorporates:
@@ -352,13 +363,14 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
   /* End of Switch: '<S55>/Switch2' */
 
   /* Product: '<S2>/Product1' incorporates:
+   *  Abs: '<S2>/Abs'
    *  Constant: '<S7>/Constant'
    *  Gain: '<S2>/Delta_T = 2*Nz*r // (Wr*tau_red*eff)'
    *  Product: '<S2>/Product2'
    *  RelationalOperator: '<S7>/Compare'
    */
-  rtb_Subtract = (rtb_delta_F >= 0.034906585039886591 ? rtb_Switch2_a : 0.0) *
-    0.0753931446090652 * rtb_T_rl;
+  rtb_Subtract = (fabs(rtb_delta_F) >= 0.034906585039886591 ? rtb_Switch2_a :
+                  0.0) * 0.0753931446090652 * rtb_T_rl;
 
   /* Product: '<S1>/Product' incorporates:
    *  Constant: '<S1>/Constant2'
@@ -367,7 +379,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Inport: '<Root>/driver_request'
    *  Sum: '<S1>/Add'
    */
-  rtb_lambda = (rtU_Tm_rr + rtU_Tm_rl) * 0.5 * rtU_Driver_req;
+  rtb_lambda = (rtTm_rr + rtTm_rl) * 0.5 * rtDriver_req;
 
   /* Sum: '<S1>/Sum3' */
   rtb_delta_F = rtb_Subtract + rtb_lambda;
@@ -379,21 +391,21 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Inport: '<Root>/Tmax_rr'
    *  Inport: '<Root>/driver_request'
    */
-  rtb_Product = rtU_Tm_rr * rtU_Driver_req;
+  rtb_Product = rtTm_rr * rtDriver_req;
 
   /* Sum: '<S66>/Add4' incorporates:
    *  Gain: '<S66>/Wr//1'
    *  Inport: '<Root>/Omega'
    *  Inport: '<Root>/u_bar'
    */
-  rtb_vms = 0.605 * rtU_yaw_rate + rtU_u_bar;
+  rtb_vms = 0.605 * rtyaw_rate + rtu_bar;
 
   /* MATLAB Function: '<S66>/Slip_est2' incorporates:
    *  Constant: '<S66>/Constant1'
    *  Gain: '<S66>/Rr1'
    *  Inport: '<Root>/omega_rr'
    */
-  Slip_est1(0.203 * rtU_omega_rr, rtb_vms, 1.0, &rtb_lambda);
+  Slip_est1(0.203 * rtomega_rr, rtb_vms, 1.0, &rtb_lambda);
 
   /* Sum: '<S75>/Add' incorporates:
    *  Constant: '<S75>/lambda_rr_max [-]'
@@ -415,7 +427,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Saturate: '<S71>/Saturation'
    *  Sum: '<S79>/Subtract'
    */
-  rtb_Gain = fmax(rtU_Brake - 0.1, 0.0);
+  rtb_Gain = fmax(rtsignal13 - 0.1, 0.0);
 
   /* DiscreteIntegrator: '<S79>/Discrete-Time Integrator1' incorporates:
    *  Saturate: '<S79>/Saturation'
@@ -430,7 +442,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
   /* If: '<S78>/If' incorporates:
    *  Inport: '<Root>/Brake'
    */
-  if (rtU_Brake < 0.1) {
+  if (rtsignal13 < 0.1) {
     /* Lookup_n-D: '<S66>/1-D Lookup Table2' incorporates:
      *  MultiPortSwitch: '<S66>/Multiport Switch1'
      *  Sum: '<S66>/Add4'
@@ -448,7 +460,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  Sum: '<S75>/Sum'
      */
     rtb_Product -= fmax(rtb_lambda * rtb_Subtract + rtb_Sum, 0.0) *
-      look1_binlxpw(rtU_map_sc, rtConstP.pooled2, rtConstP.pooled2, 1U);
+      look1_binlxpw(rtsignal12, rtConstP.pooled2, rtConstP.pooled2, 1U);
 
     /* Switch: '<S76>/Switch2' incorporates:
      *  Constant: '<S66>/Constant'
@@ -458,8 +470,8 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  RelationalOperator: '<S76>/UpperRelop'
      *  Switch: '<S76>/Switch'
      */
-    if (rtb_Product > rtU_Tm_rr) {
-      rtb_Product = rtU_Tm_rr;
+    if (rtb_Product > rtTm_rr) {
+      rtb_Product = rtTm_rr;
     } else if (rtb_Product < 0.0) {
       /* Switch: '<S76>/Switch' incorporates:
        *  Constant: '<S66>/Constant'
@@ -476,21 +488,21 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Inport: '<Root>/Tmax_rl'
    *  Inport: '<Root>/driver_request'
    */
-  rtb_vms = rtU_Tm_rl * rtU_Driver_req;
+  rtb_vms = rtTm_rl * rtDriver_req;
 
   /* Sum: '<S65>/Add5' incorporates:
    *  Gain: '<S65>/Wr//2'
    *  Inport: '<Root>/Omega'
    *  Inport: '<Root>/u_bar'
    */
-  rtb_vms_n = rtU_u_bar - 0.605 * rtU_yaw_rate;
+  rtb_vms_n = rtu_bar - 0.605 * rtyaw_rate;
 
   /* MATLAB Function: '<S65>/Slip_est1' incorporates:
    *  Constant: '<S65>/Constant'
    *  Gain: '<S65>/Rl'
    *  Inport: '<Root>/omega_rl'
    */
-  Slip_est1(0.203 * rtU_omega_rl, rtb_vms_n, 1.0, &rtb_lambda);
+  Slip_est1(0.203 * rtomega_rl, rtb_vms_n, 1.0, &rtb_lambda);
 
   /* Sum: '<S67>/Add' incorporates:
    *  Constant: '<S67>/lambda_rl_max [-]'
@@ -520,7 +532,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
   /* If: '<S70>/If' incorporates:
    *  Inport: '<Root>/Brake'
    */
-  if (rtU_Brake < 0.1) {
+  if (rtsignal13 < 0.1) {
     /* Lookup_n-D: '<S65>/1-D Lookup Table' incorporates:
      *  MultiPortSwitch: '<S65>/Multiport Switch'
      *  Sum: '<S65>/Add5'
@@ -538,7 +550,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  Sum: '<S67>/Sum'
      */
     rtb_vms -= fmax(rtb_Add_g * rtb_vms_n + rtb_lambda, 0.0) * look1_binlxpw
-      (rtU_map_sc, rtConstP.pooled2, rtConstP.pooled2, 1U);
+      (rtsignal12, rtConstP.pooled2, rtConstP.pooled2, 1U);
 
     /* Switch: '<S68>/Switch2' incorporates:
      *  Constant: '<S65>/Constant1'
@@ -548,8 +560,8 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  RelationalOperator: '<S68>/UpperRelop'
      *  Switch: '<S68>/Switch'
      */
-    if (rtb_vms > rtU_Tm_rl) {
-      rtb_vms = rtU_Tm_rl;
+    if (rtb_vms > rtTm_rl) {
+      rtb_vms = rtTm_rl;
     } else if (rtb_vms < 0.0) {
       /* Switch: '<S68>/Switch' incorporates:
        *  Constant: '<S65>/Constant1'
@@ -565,7 +577,7 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
   /* MATLAB Function: '<S1>/Saturation block' incorporates:
    *  Inport: '<Root>/u_bar'
    */
-  if (rtU_u_bar > 5.0) {
+  if (rtu_bar > 5.0) {
     if (rtb_delta_F > rtb_Product) {
       rtb_vms_n = rtb_delta_F - rtb_Product;
     } else {
@@ -598,20 +610,20 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  RelationalOperator: '<S3>/UpperRelop'
    *  Switch: '<S3>/Switch'
    */
-  if (rtb_Product > rtU_Tm_rr) {
+  if (rtb_Product > rtTm_rr) {
     /* Outport: '<Root>/Tm_rr' */
-    *rtY_Tm_rr = rtU_Tm_rr;
+    rtTm_rr_m = rtTm_rr;
   } else if (rtb_Product < 0.0) {
     /* Switch: '<S3>/Switch' incorporates:
      *  Constant: '<S1>/Constant'
      *  Outport: '<Root>/Tm_rr'
      */
-    *rtY_Tm_rr = 0.0;
+    rtTm_rr_m = 0.0;
   } else {
     /* Outport: '<Root>/Tm_rr' incorporates:
      *  Switch: '<S3>/Switch'
      */
-    *rtY_Tm_rr = rtb_Product;
+    rtTm_rr_m = rtb_Product;
   }
 
   /* End of Switch: '<S3>/Switch2' */
@@ -623,20 +635,20 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  RelationalOperator: '<S4>/UpperRelop'
    *  Switch: '<S4>/Switch'
    */
-  if (rtb_vms > rtU_Tm_rl) {
+  if (rtb_vms > rtTm_rl) {
     /* Outport: '<Root>/Tm_rl' */
-    *rtY_Tm_rl = rtU_Tm_rl;
+    rtTm_rl_a = rtTm_rl;
   } else if (rtb_vms < 0.0) {
     /* Switch: '<S4>/Switch' incorporates:
      *  Constant: '<S1>/Constant1'
      *  Outport: '<Root>/Tm_rl'
      */
-    *rtY_Tm_rl = 0.0;
+    rtTm_rl_a = 0.0;
   } else {
     /* Outport: '<Root>/Tm_rl' incorporates:
      *  Switch: '<S4>/Switch'
      */
-    *rtY_Tm_rl = rtb_vms;
+    rtTm_rl_a = rtb_vms;
   }
 
   /* End of Switch: '<S4>/Switch2' */
@@ -664,37 +676,32 @@ void All0_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
 }
 
 /* Model initialize function */
-void All0_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
-                     *rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl,
-                     real_T *rtU_yaw_rate, real_T *rtU_Steeringangle, real_T
-                     *rtU_Brake, real_T *rtU_Tm_rl, real_T *rtU_Tm_rr, real_T
-                     *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr, real_T *
-                     rtY_Tm_rl)
+void All0_initialize(RT_MODEL *const rtM)
 {
   DW *rtDW = rtM->dwork;
 
   /* Registration code */
 
+  /* Storage classes */
+  rtTm_rr_m = 0.0;
+  rtTm_rl_a = 0.0;
+
+  /* Storage classes */
+  rtDriver_req = 0.0;
+  rtu_bar = 0.0;
+  rtomega_rr = 0.0;
+  rtomega_rl = 0.0;
+  rtyaw_rate = 0.0;
+  rtSteeringangle = 0.0;
+  rtsignal13 = 0.0;
+  rtTm_rl = 0.0;
+  rtTm_rr = 0.0;
+  rtsignal11 = 0.0;
+  rtsignal12 = 0.0;
+
   /* states (dwork) */
   (void) memset((void *)rtDW, 0,
                 sizeof(DW));
-
-  /* external inputs */
-  *rtU_Driver_req = 0.0;
-  *rtU_u_bar = 0.0;
-  *rtU_omega_rr = 0.0;
-  *rtU_omega_rl = 0.0;
-  *rtU_yaw_rate = 0.0;
-  *rtU_Steeringangle = 0.0;
-  *rtU_Brake = 0.0;
-  *rtU_Tm_rl = 0.0;
-  *rtU_Tm_rr = 0.0;
-  *rtU_map_tv = 0.0;
-  *rtU_map_sc = 0.0;
-
-  /* external outputs */
-  *rtY_Tm_rr = 0.0;
-  *rtY_Tm_rl = 0.0;
 
   /* InitializeConditions for DiscreteIntegrator: '<S47>/Integrator' */
   rtDW->Integrator_DSTATE = 0.0;

@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Torque'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.254
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:04:27 2022
+ * C/C++ source code generated on : Tue Jul 26 10:42:54 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -46,7 +46,7 @@ typedef struct tag_RTM RT_MODEL;
 
 /* Block signals and states (default storage) for system '<Root>' */
 typedef struct {
-  real_T Integrator_DSTATE;            /* '<S47>/Integrator' */
+  real_T Integrator_DSTATE;            /* '<S46>/Integrator' */
 } DW;
 
 /* Constant parameters (default storage) */
@@ -54,34 +54,34 @@ typedef struct {
   /* Pooled Parameter (Expression: [0 1])
    * Referenced by:
    *   '<S2>/1-D Lookup Table2'
-   *   '<S10>/1-D Lookup Table2'
+   *   '<S9>/1-D Lookup Table2'
    */
   real_T pooled1[2];
 
   /* Expression: TV.KusT.K_us
-   * Referenced by: '<S9>/K_us_table'
+   * Referenced by: '<S8>/K_us_table'
    */
-  real_T K_us_table_tableData[10];
+  real_T K_us_table_tableData[7];
 
   /* Expression: TV.KusT.u_vals
-   * Referenced by: '<S9>/K_us_table'
+   * Referenced by: '<S8>/K_us_table'
    */
-  real_T K_us_table_bp01Data[10];
+  real_T K_us_table_bp01Data[7];
 
   /* Expression: TV.PID.Kp_vals
-   * Referenced by: '<S10>/P_table'
+   * Referenced by: '<S9>/P_table'
    */
   real_T P_table_tableData[8];
 
   /* Pooled Parameter (Expression: TV.PID.u_vals)
    * Referenced by:
-   *   '<S10>/I_table'
-   *   '<S10>/P_table'
+   *   '<S9>/I_table'
+   *   '<S9>/P_table'
    */
   real_T pooled2[8];
 
   /* Expression: TV.PID.Ki_vals
-   * Referenced by: '<S10>/I_table'
+   * Referenced by: '<S9>/I_table'
    */
   real_T I_table_tableData[8];
 } ConstP;
@@ -96,28 +96,41 @@ struct tag_RTM {
 extern const ConstP rtConstP;
 
 /* Model entry point functions */
-extern void Torque_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req,
-  real_T *rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl, real_T
-  *rtU_yaw_rate, real_T *rtU_Steeringangle, real_T *rtU_Brake, real_T *rtU_Tm_rl,
-  real_T *rtU_Tm_rr, real_T *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr,
-  real_T *rtY_Tm_rl);
-extern void Torque_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T
-  rtU_u_bar, real_T rtU_yaw_rate, real_T rtU_Steeringangle, real_T rtU_Tm_rl,
-  real_T rtU_Tm_rr, real_T rtU_map_tv, real_T *rtY_Tm_rr, real_T *rtY_Tm_rl);
+extern void Torque_initialize(RT_MODEL *const rtM);
+extern void Torque_step(RT_MODEL *const rtM);
+
+/* Exported data declaration */
+
+/* Data with Exported storage */
+extern real_T rtDriver_req;            /* '<Root>/driver_request' */
+extern real_T rtSteeringangle;         /* '<Root>/delta' */
+extern real_T rtTm_rl;                 /* '<Root>/Tmax_rl' */
+extern real_T rtTm_rl_a;               /* '<Root>/Tm_rl' */
+extern real_T rtTm_rr;                 /* '<Root>/Tmax_rr' */
+extern real_T rtTm_rr_m;               /* '<Root>/Tm_rr' */
+extern real_T rtomega_rl;              /* '<Root>/omega_rl' */
+extern real_T rtomega_rr;              /* '<Root>/omega_rr' */
+extern real_T rtsignal11;              /* '<Root>/map_tv' */
+extern real_T rtsignal12;              /* '<Root>/map_sc' */
+extern real_T rtsignal13;              /* '<Root>/Brake' */
+extern real_T rtu_bar;                 /* '<Root>/u_bar' */
+extern real_T rtyaw_rate;              /* '<Root>/Omega' */
 
 /*-
  * These blocks were eliminated from the model due to optimizations:
  *
- * Block '<S55>/Data Type Duplicate' : Unused code path elimination
- * Block '<S55>/Data Type Propagation' : Unused code path elimination
- * Block '<S6>/deltaT' : Unused code path elimination
- * Block '<S6>/deltarad' : Unused code path elimination
- * Block '<S6>/errore' : Unused code path elimination
- * Block '<S6>/omega' : Unused code path elimination
+ * Block '<S54>/Data Type Duplicate' : Unused code path elimination
+ * Block '<S54>/Data Type Propagation' : Unused code path elimination
+ * Block '<S2>/deltaT' : Unused code path elimination
+ * Block '<S2>/deltarad' : Unused code path elimination
+ * Block '<S2>/errore' : Unused code path elimination
+ * Block '<S2>/omega' : Unused code path elimination
  * Block '<S3>/Data Type Duplicate' : Unused code path elimination
  * Block '<S3>/Data Type Propagation' : Unused code path elimination
  * Block '<S4>/Data Type Duplicate' : Unused code path elimination
  * Block '<S4>/Data Type Propagation' : Unused code path elimination
+ * Block '<S1>/Scope' : Unused code path elimination
+ * Block '<S1>/Scope1' : Unused code path elimination
  */
 
 /*-
@@ -143,65 +156,64 @@ extern void Torque_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T
  * '<S3>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/Saturation Dynamic'
  * '<S4>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/Saturation Dynamic1'
  * '<S5>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/Saturation block'
- * '<S6>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller'
- * '<S7>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Steering angle > 2deg'
- * '<S8>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/SteeringModel'
- * '<S9>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate estimator '
- * '<S10>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking'
- * '<S11>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate estimator /Yaw-Rate'
- * '<S12>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID'
- * '<S13>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Anti-windup'
- * '<S14>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/D Gain'
- * '<S15>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Filter'
- * '<S16>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Filter ICs'
- * '<S17>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/I Gain'
- * '<S18>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain'
- * '<S19>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain Fdbk'
- * '<S20>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Integrator'
- * '<S21>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Integrator ICs'
- * '<S22>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/N Copy'
- * '<S23>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/N Gain'
- * '<S24>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/P Copy'
- * '<S25>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Parallel P Gain'
- * '<S26>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Reset Signal'
- * '<S27>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Saturation'
- * '<S28>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Saturation Fdbk'
- * '<S29>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Sum'
- * '<S30>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Sum Fdbk'
- * '<S31>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode'
- * '<S32>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode Sum'
- * '<S33>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Integral'
- * '<S34>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Ngain'
- * '<S35>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/postSat Signal'
- * '<S36>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/preSat Signal'
- * '<S37>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel'
- * '<S38>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel/Dead Zone'
- * '<S39>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel/Dead Zone/External'
- * '<S40>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel/Dead Zone/External/Dead Zone Dynamic'
- * '<S41>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/D Gain/Disabled'
- * '<S42>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Filter/Disabled'
- * '<S43>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Filter ICs/Disabled'
- * '<S44>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/I Gain/External Parameters'
- * '<S45>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain/Passthrough'
- * '<S46>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain Fdbk/Passthrough'
- * '<S47>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Integrator/Discrete'
- * '<S48>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Integrator ICs/Internal IC'
- * '<S49>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/N Copy/Disabled wSignal Specification'
- * '<S50>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/N Gain/Disabled'
- * '<S51>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/P Copy/Disabled'
- * '<S52>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Parallel P Gain/External Parameters'
- * '<S53>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Reset Signal/Disabled'
- * '<S54>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Saturation/External'
- * '<S55>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Saturation/External/Saturation Dynamic'
- * '<S56>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Saturation Fdbk/Passthrough'
- * '<S57>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Sum/Sum_PI'
- * '<S58>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Sum Fdbk/Enabled'
- * '<S59>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode/Disabled'
- * '<S60>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode Sum/Passthrough'
- * '<S61>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Integral/Passthrough'
- * '<S62>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Ngain/Passthrough'
- * '<S63>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/postSat Signal/Feedback_Path'
- * '<S64>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate Controller/Yaw-Rate tracking/Discrete Varying PID/preSat Signal/Feedback_Path'
+ * '<S6>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Steering angle > 2deg'
+ * '<S7>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/SteeringModel'
+ * '<S8>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate estimator '
+ * '<S9>'   : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking'
+ * '<S10>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate estimator /Yaw-Rate'
+ * '<S11>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID'
+ * '<S12>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Anti-windup'
+ * '<S13>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/D Gain'
+ * '<S14>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Filter'
+ * '<S15>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Filter ICs'
+ * '<S16>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/I Gain'
+ * '<S17>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain'
+ * '<S18>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain Fdbk'
+ * '<S19>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Integrator'
+ * '<S20>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Integrator ICs'
+ * '<S21>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/N Copy'
+ * '<S22>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/N Gain'
+ * '<S23>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/P Copy'
+ * '<S24>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Parallel P Gain'
+ * '<S25>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Reset Signal'
+ * '<S26>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Saturation'
+ * '<S27>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Saturation Fdbk'
+ * '<S28>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Sum'
+ * '<S29>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Sum Fdbk'
+ * '<S30>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode'
+ * '<S31>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode Sum'
+ * '<S32>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Integral'
+ * '<S33>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Ngain'
+ * '<S34>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/postSat Signal'
+ * '<S35>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/preSat Signal'
+ * '<S36>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel'
+ * '<S37>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel/Dead Zone'
+ * '<S38>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel/Dead Zone/External'
+ * '<S39>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Anti-windup/Disc. Clamping Parallel/Dead Zone/External/Dead Zone Dynamic'
+ * '<S40>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/D Gain/Disabled'
+ * '<S41>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Filter/Disabled'
+ * '<S42>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Filter ICs/Disabled'
+ * '<S43>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/I Gain/External Parameters'
+ * '<S44>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain/Passthrough'
+ * '<S45>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Ideal P Gain Fdbk/Passthrough'
+ * '<S46>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Integrator/Discrete'
+ * '<S47>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Integrator ICs/Internal IC'
+ * '<S48>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/N Copy/Disabled wSignal Specification'
+ * '<S49>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/N Gain/Disabled'
+ * '<S50>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/P Copy/Disabled'
+ * '<S51>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Parallel P Gain/External Parameters'
+ * '<S52>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Reset Signal/Disabled'
+ * '<S53>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Saturation/External'
+ * '<S54>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Saturation/External/Saturation Dynamic'
+ * '<S55>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Saturation Fdbk/Passthrough'
+ * '<S56>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Sum/Sum_PI'
+ * '<S57>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Sum Fdbk/Enabled'
+ * '<S58>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode/Disabled'
+ * '<S59>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tracking Mode Sum/Passthrough'
+ * '<S60>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Integral/Passthrough'
+ * '<S61>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/Tsamp - Ngain/Passthrough'
+ * '<S62>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/postSat Signal/Feedback_Path'
+ * '<S63>'  : 'Fenice_VehicleModel/Vehicle Controller/Torque vectoring/PI Control/Yaw-Rate tracking/Discrete Varying PID/preSat Signal/Feedback_Path'
  */
 #endif                                 /* RTW_HEADER_Torque_h_ */
 

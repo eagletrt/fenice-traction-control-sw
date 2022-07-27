@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Slip'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.254
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:03:14 2022
+ * C/C++ source code generated on : Tue Jul 26 10:42:23 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -23,6 +23,22 @@
 #include "rtwtypes.h"
 #include <math.h>
 
+/* Exported data definition */
+
+/* Data with Exported storage */
+real_T rtDriver_req;                   /* '<Root>/driver_request' */
+real_T rtSteeringangle;                /* '<Root>/delta' */
+real_T rtTm_rl;                        /* '<Root>/Tmax_rl' */
+real_T rtTm_rl_a;                      /* '<Root>/Tm_rl' */
+real_T rtTm_rr;                        /* '<Root>/Tmax_rr' */
+real_T rtTm_rr_m;                      /* '<Root>/Tm_rr' */
+real_T rtomega_rl;                     /* '<Root>/omega_rl' */
+real_T rtomega_rr;                     /* '<Root>/omega_rr' */
+real_T rtsignal11;                     /* '<Root>/map_tv' */
+real_T rtsignal12;                     /* '<Root>/map_sc' */
+real_T rtsignal13;                     /* '<Root>/Brake' */
+real_T rtu_bar;                        /* '<Root>/u_bar' */
+real_T rtyaw_rate;                     /* '<Root>/Omega' */
 static real_T look1_pbinlcapw(real_T u0, const real_T bp0[], const real_T table[],
   uint32_T prevIndex[], uint32_T maxIndex);
 static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
@@ -177,10 +193,7 @@ static void Slip_est1(real_T rtu_omegaR, real_T rtu_u_bar, real_T rtu_Vlow,
 }
 
 /* Model step function */
-void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
-               real_T rtU_omega_rr, real_T rtU_omega_rl, real_T rtU_yaw_rate,
-               real_T rtU_Brake, real_T rtU_Tm_rl, real_T rtU_Tm_rr, real_T
-               rtU_map_sc, real_T *rtY_Tm_rr, real_T *rtY_Tm_rl)
+void Slip_step(RT_MODEL *const rtM)
 {
   DW *rtDW = rtM->dwork;
   real_T DiscreteTimeIntegrator1;
@@ -196,14 +209,14 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Inport: '<Root>/Omega'
    *  Inport: '<Root>/u_bar'
    */
-  rtb_vms = rtU_u_bar - 0.605 * rtU_yaw_rate;
+  rtb_vms = rtu_bar - 0.605 * rtyaw_rate;
 
   /* MATLAB Function: '<S4>/Slip_est1' incorporates:
    *  Constant: '<S4>/Constant'
    *  Gain: '<S4>/Rl'
    *  Inport: '<Root>/omega_rl'
    */
-  Slip_est1(0.203 * rtU_omega_rl, rtb_vms, 1.0, &rtb_lambda);
+  Slip_est1(0.203 * rtomega_rl, rtb_vms, 1.0, &rtb_lambda);
 
   /* Sum: '<S6>/Add' incorporates:
    *  Constant: '<S6>/lambda_rl_max [-]'
@@ -225,7 +238,7 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Saturate: '<S18>/Saturation'
    *  Sum: '<S10>/Subtract'
    */
-  rtb_Saturation_tmp = fmax(rtU_Brake - 0.1, 0.0);
+  rtb_Saturation_tmp = fmax(rtsignal13 - 0.1, 0.0);
 
   /* DiscreteIntegrator: '<S10>/Discrete-Time Integrator1' incorporates:
    *  Saturate: '<S10>/Saturation'
@@ -242,14 +255,14 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
   /* If: '<S9>/If' incorporates:
    *  Inport: '<Root>/Brake'
    */
-  if (rtU_Brake >= 0.1) {
+  if (rtsignal13 >= 0.1) {
     /* Outport: '<Root>/Tm_rl' incorporates:
      *  Inport: '<Root>/Tmax_rl'
      *  Inport: '<Root>/driver_request'
      *  MultiPortSwitch: '<S4>/Multiport Switch'
      *  Product: '<S4>/Product'
      */
-    *rtY_Tm_rl = rtU_Driver_req * rtU_Tm_rl;
+    rtTm_rl_a = rtDriver_req * rtTm_rl;
   } else {
     /* Lookup_n-D: '<S4>/1-D Lookup Table' incorporates:
      *  MultiPortSwitch: '<S4>/Multiport Switch'
@@ -270,8 +283,8 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  Saturate: '<S6>/Saturation'
      *  Sum: '<S6>/Sum'
      */
-    rtb_vms = rtU_Driver_req * rtU_Tm_rl - fmax(rtb_Add * rtb_lambda +
-      DiscreteTimeIntegrator1, 0.0) * look1_binlxpw(rtU_map_sc, rtConstP.pooled2,
+    rtb_vms = rtDriver_req * rtTm_rl - fmax(rtb_Add * rtb_lambda +
+      DiscreteTimeIntegrator1, 0.0) * look1_binlxpw(rtsignal12, rtConstP.pooled2,
       rtConstP.pooled2, 1U);
 
     /* Switch: '<S7>/Switch2' incorporates:
@@ -282,20 +295,20 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  RelationalOperator: '<S7>/UpperRelop'
      *  Switch: '<S7>/Switch'
      */
-    if (rtb_vms > rtU_Tm_rl) {
+    if (rtb_vms > rtTm_rl) {
       /* Outport: '<Root>/Tm_rl' */
-      *rtY_Tm_rl = rtU_Tm_rl;
+      rtTm_rl_a = rtTm_rl;
     } else if (rtb_vms < 0.0) {
       /* Switch: '<S7>/Switch' incorporates:
        *  Constant: '<S4>/Constant1'
        *  Outport: '<Root>/Tm_rl'
        */
-      *rtY_Tm_rl = 0.0;
+      rtTm_rl_a = 0.0;
     } else {
       /* Outport: '<Root>/Tm_rl' incorporates:
        *  Switch: '<S7>/Switch'
        */
-      *rtY_Tm_rl = rtb_vms;
+      rtTm_rl_a = rtb_vms;
     }
 
     /* End of Switch: '<S7>/Switch2' */
@@ -308,14 +321,14 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
    *  Inport: '<Root>/Omega'
    *  Inport: '<Root>/u_bar'
    */
-  rtb_vms = 0.605 * rtU_yaw_rate + rtU_u_bar;
+  rtb_vms = 0.605 * rtyaw_rate + rtu_bar;
 
   /* MATLAB Function: '<S5>/Slip_est1' incorporates:
    *  Constant: '<S5>/Constant'
    *  Gain: '<S5>/Rr'
    *  Inport: '<Root>/omega_rr'
    */
-  Slip_est1(0.203 * rtU_omega_rr, rtb_vms, 1.0, &rtb_lambda);
+  Slip_est1(0.203 * rtomega_rr, rtb_vms, 1.0, &rtb_lambda);
 
   /* Sum: '<S14>/Add' incorporates:
    *  Constant: '<S14>/lambda_rr_max [-]'
@@ -344,14 +357,14 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
   /* If: '<S17>/If' incorporates:
    *  Inport: '<Root>/Brake'
    */
-  if (rtU_Brake >= 0.1) {
+  if (rtsignal13 >= 0.1) {
     /* Outport: '<Root>/Tm_rr' incorporates:
      *  Inport: '<Root>/Tmax_rr'
      *  Inport: '<Root>/driver_request'
      *  MultiPortSwitch: '<S5>/Multiport Switch'
      *  Product: '<S5>/Product'
      */
-    *rtY_Tm_rr = rtU_Driver_req * rtU_Tm_rr;
+    rtTm_rr_m = rtDriver_req * rtTm_rr;
   } else {
     /* Lookup_n-D: '<S5>/1-D Lookup Table' incorporates:
      *  MultiPortSwitch: '<S5>/Multiport Switch'
@@ -372,8 +385,8 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  Saturate: '<S14>/Saturation'
      *  Sum: '<S14>/Sum'
      */
-    rtb_vms = rtU_Driver_req * rtU_Tm_rr - fmax(rtb_Add * rtb_vms +
-      DiscreteTimeIntegrator1_h, 0.0) * look1_binlxpw(rtU_map_sc,
+    rtb_vms = rtDriver_req * rtTm_rr - fmax(rtb_Add * rtb_vms +
+      DiscreteTimeIntegrator1_h, 0.0) * look1_binlxpw(rtsignal12,
       rtConstP.pooled2, rtConstP.pooled2, 1U);
 
     /* Switch: '<S15>/Switch2' incorporates:
@@ -384,20 +397,20 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
      *  RelationalOperator: '<S15>/UpperRelop'
      *  Switch: '<S15>/Switch'
      */
-    if (rtb_vms > rtU_Tm_rr) {
+    if (rtb_vms > rtTm_rr) {
       /* Outport: '<Root>/Tm_rr' */
-      *rtY_Tm_rr = rtU_Tm_rr;
+      rtTm_rr_m = rtTm_rr;
     } else if (rtb_vms < 0.0) {
       /* Switch: '<S15>/Switch' incorporates:
        *  Constant: '<S5>/Constant1'
        *  Outport: '<Root>/Tm_rr'
        */
-      *rtY_Tm_rr = 0.0;
+      rtTm_rr_m = 0.0;
     } else {
       /* Outport: '<Root>/Tm_rr' incorporates:
        *  Switch: '<S15>/Switch'
        */
-      *rtY_Tm_rr = rtb_vms;
+      rtTm_rr_m = rtb_vms;
     }
 
     /* End of Switch: '<S15>/Switch2' */
@@ -427,37 +440,32 @@ void Slip_step(RT_MODEL *const rtM, real_T rtU_Driver_req, real_T rtU_u_bar,
 }
 
 /* Model initialize function */
-void Slip_initialize(RT_MODEL *const rtM, real_T *rtU_Driver_req, real_T
-                     *rtU_u_bar, real_T *rtU_omega_rr, real_T *rtU_omega_rl,
-                     real_T *rtU_yaw_rate, real_T *rtU_Steeringangle, real_T
-                     *rtU_Brake, real_T *rtU_Tm_rl, real_T *rtU_Tm_rr, real_T
-                     *rtU_map_tv, real_T *rtU_map_sc, real_T *rtY_Tm_rr, real_T *
-                     rtY_Tm_rl)
+void Slip_initialize(RT_MODEL *const rtM)
 {
   DW *rtDW = rtM->dwork;
 
   /* Registration code */
 
+  /* Storage classes */
+  rtTm_rr_m = 0.0;
+  rtTm_rl_a = 0.0;
+
+  /* Storage classes */
+  rtDriver_req = 0.0;
+  rtu_bar = 0.0;
+  rtomega_rr = 0.0;
+  rtomega_rl = 0.0;
+  rtyaw_rate = 0.0;
+  rtSteeringangle = 0.0;
+  rtsignal13 = 0.0;
+  rtTm_rl = 0.0;
+  rtTm_rr = 0.0;
+  rtsignal11 = 0.0;
+  rtsignal12 = 0.0;
+
   /* states (dwork) */
   (void) memset((void *)rtDW, 0,
                 sizeof(DW));
-
-  /* external inputs */
-  *rtU_Driver_req = 0.0;
-  *rtU_u_bar = 0.0;
-  *rtU_omega_rr = 0.0;
-  *rtU_omega_rl = 0.0;
-  *rtU_yaw_rate = 0.0;
-  *rtU_Steeringangle = 0.0;
-  *rtU_Brake = 0.0;
-  *rtU_Tm_rl = 0.0;
-  *rtU_Tm_rr = 0.0;
-  *rtU_map_tv = 0.0;
-  *rtU_map_sc = 0.0;
-
-  /* external outputs */
-  *rtY_Tm_rr = 0.0;
-  *rtY_Tm_rl = 0.0;
 
   /* InitializeConditions for DiscreteIntegrator: '<S10>/Discrete-Time Integrator1' */
   rtDW->DiscreteTimeIntegrator1_PrevRes = 0;

@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Velocity_Estimation'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.255
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:02:01 2022
+ * C/C++ source code generated on : Wed Jul 27 11:29:19 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7

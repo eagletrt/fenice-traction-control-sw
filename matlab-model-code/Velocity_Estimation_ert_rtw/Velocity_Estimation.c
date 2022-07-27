@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Velocity_Estimation'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.255
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:02:01 2022
+ * C/C++ source code generated on : Wed Jul 27 11:29:19 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -22,6 +22,18 @@
 #include "Velocity_Estimation.h"
 #include "rtwtypes.h"
 
+/* Exported data definition */
+
+/* Data with Exported storage */
+real_T rtTmax_rl;                      /* '<Root>/Tmax_rl' */
+real_T rtTmax_rr;                      /* '<Root>/Tmax_rr' */
+real_T rtaxG;                          /* '<Root>/a_x' */
+real_T rtomega_fl;                     /* '<Root>/omega_fl' */
+real_T rtomega_fr;                     /* '<Root>/omega_fr' */
+real_T rtomega_rl;                     /* '<Root>/omega_rl' */
+real_T rtomega_rr;                     /* '<Root>/omega_rr' */
+real_T rtsignal10;                     /* '<Root>/map' */
+real_T rtu_bar;                        /* '<Root>/u_bar' */
 static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
   uint32_T maxIndex);
 static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
@@ -83,9 +95,7 @@ static real_T look1_binlxpw(real_T u0, const real_T bp0[], const real_T table[],
 }
 
 /* Model step function */
-void Velocity_Estimation_step(RT_MODEL *const rtM, real_T rtU_omega_fl, real_T
-  rtU_omega_fr, real_T rtU_omega_rl, real_T rtU_omega_rr, real_T rtU_axG, real_T
-  rtU_map_motor, real_T *rtY_u_bar, real_T *rtY_Tmax_rr, real_T *rtY_Tmax_rl)
+void Velocity_Estimation_step(RT_MODEL *const rtM)
 {
   DW *rtDW = rtM->dwork;
   real_T rtb_DiscreteFilter1;
@@ -99,9 +109,9 @@ void Velocity_Estimation_step(RT_MODEL *const rtM, real_T rtU_omega_fl, real_T
    *  Lookup_n-D: '<S1>/1-D Lookup Table2'
    *  MATLAB Function: '<S1>/MATLAB Function'
    */
-  rtb_DiscreteFilter1 = 55.0 * look1_binlxpw(rtU_map_motor,
+  rtb_DiscreteFilter1 = 55.0 * look1_binlxpw(rtsignal10,
     rtConstP.uDLookupTable2_bp01Data, rtConstP.uDLookupTable2_tableData, 5U);
-  w_mot = rtU_omega_rr * 4.5 * 60.0 / 6.2831853071795862;
+  w_mot = rtomega_rr * 4.5 * 60.0 / 6.2831853071795862;
   if (w_mot <= 5000.0) {
     w_mot = rtb_DiscreteFilter1;
   } else {
@@ -120,13 +130,13 @@ void Velocity_Estimation_step(RT_MODEL *const rtM, real_T rtU_omega_fl, real_T
   /* End of MATLAB Function: '<S1>/MATLAB Function1' */
 
   /* Outport: '<Root>/Tmax_rr' */
-  *rtY_Tmax_rr = w_mot;
+  rtTmax_rr = w_mot;
 
   /* MATLAB Function: '<S1>/MATLAB Function' incorporates:
    *  Constant: '<S1>/Constant'
    *  Inport: '<Root>/omega_rl'
    */
-  w_mot = rtU_omega_rl * 4.5 * 60.0 / 6.2831853071795862;
+  w_mot = rtomega_rl * 4.5 * 60.0 / 6.2831853071795862;
   if (w_mot <= 5000.0) {
     w_mot = rtb_DiscreteFilter1;
   } else {
@@ -143,7 +153,7 @@ void Velocity_Estimation_step(RT_MODEL *const rtM, real_T rtU_omega_fl, real_T
   }
 
   /* Outport: '<Root>/Tmax_rl' */
-  *rtY_Tmax_rl = w_mot;
+  rtTmax_rl = w_mot;
 
   /* Product: '<S4>/Product' incorporates:
    *  Constant: '<S4>/Constant'
@@ -153,24 +163,26 @@ void Velocity_Estimation_step(RT_MODEL *const rtM, real_T rtU_omega_fl, real_T
    *  Product: '<S4>/Divide'
    *  Sum: '<S4>/Sum1'
    */
-  w_mot = (rtU_omega_fl + rtU_omega_fr) / 2.0 * 0.203;
+  w_mot = (rtomega_fl + rtomega_fr) / 2.0 * 0.203;
 
   /* DiscreteFilter: '<S4>/Discrete Filter1' */
-  rtb_DiscreteFilter1 = (0.005 * w_mot + -0.005 * rtDW->DiscreteFilter1_states)
-    - -0.99950012497916929 * rtDW->DiscreteFilter1_denStates;
+  rtb_DiscreteFilter1 = (0.0050000000000000027 * w_mot + -0.0050000000000000018 *
+    rtDW->DiscreteFilter1_states) - -0.99950012497916929 *
+    rtDW->DiscreteFilter1_denStates;
 
   /* Outport: '<Root>/u_bar' incorporates:
    *  Sum: '<S4>/Sum'
    *  Sum: '<S4>/Sum2'
    *  UnitDelay: '<S4>/Unit Delay'
    */
-  *rtY_u_bar = (w_mot - rtb_DiscreteFilter1) + rtDW->UnitDelay_DSTATE;
+  rtu_bar = (w_mot - rtb_DiscreteFilter1) + rtDW->UnitDelay_DSTATE;
 
   /* DiscreteFilter: '<S4>/Discrete Filter2' incorporates:
    *  Inport: '<Root>/a_x'
    */
-  rtb_DiscreteFilter2 = (0.005 * rtU_axG + -0.005 * rtDW->DiscreteFilter2_states)
-    - -0.99950012497916929 * rtDW->DiscreteFilter2_denStates;
+  rtb_DiscreteFilter2 = (0.0050000000000000027 * rtaxG + -0.0050000000000000018 *
+    rtDW->DiscreteFilter2_states) - -0.99950012497916929 *
+    rtDW->DiscreteFilter2_denStates;
 
   /* Update for DiscreteFilter: '<S4>/Discrete Filter1' */
   rtDW->DiscreteFilter1_states = w_mot;
@@ -182,37 +194,33 @@ void Velocity_Estimation_step(RT_MODEL *const rtM, real_T rtU_omega_fl, real_T
   /* Update for DiscreteFilter: '<S4>/Discrete Filter2' incorporates:
    *  Inport: '<Root>/a_x'
    */
-  rtDW->DiscreteFilter2_states = rtU_axG;
+  rtDW->DiscreteFilter2_states = rtaxG;
   rtDW->DiscreteFilter2_denStates = rtb_DiscreteFilter2;
 }
 
 /* Model initialize function */
-void Velocity_Estimation_initialize(RT_MODEL *const rtM, real_T *rtU_omega_fl,
-  real_T *rtU_omega_fr, real_T *rtU_omega_rl, real_T *rtU_omega_rr, real_T
-  *rtU_axG, real_T *rtU_map_motor, real_T *rtU_u, real_T *rtY_u_bar, real_T
-  *rtY_Tmax_rr, real_T *rtY_Tmax_rl)
+void Velocity_Estimation_initialize(RT_MODEL *const rtM)
 {
   DW *rtDW = rtM->dwork;
 
   /* Registration code */
 
+  /* Storage classes */
+  rtu_bar = 0.0;
+  rtTmax_rr = 0.0;
+  rtTmax_rl = 0.0;
+
+  /* Storage classes */
+  rtomega_fl = 0.0;
+  rtomega_fr = 0.0;
+  rtomega_rl = 0.0;
+  rtomega_rr = 0.0;
+  rtaxG = 0.0;
+  rtsignal10 = 0.0;
+
   /* states (dwork) */
   (void) memset((void *)rtDW, 0,
                 sizeof(DW));
-
-  /* external inputs */
-  *rtU_omega_fl = 0.0;
-  *rtU_omega_fr = 0.0;
-  *rtU_omega_rl = 0.0;
-  *rtU_omega_rr = 0.0;
-  *rtU_axG = 0.0;
-  *rtU_map_motor = 0.0;
-  *rtU_u = 0.0;
-
-  /* external outputs */
-  *rtY_u_bar = 0.0;
-  *rtY_Tmax_rr = 0.0;
-  *rtY_Tmax_rl = 0.0;
 
   /* InitializeConditions for DiscreteFilter: '<S4>/Discrete Filter1' */
   rtDW->DiscreteFilter1_states = 0.0;

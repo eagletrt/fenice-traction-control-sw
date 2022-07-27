@@ -2,8 +2,8 @@
 ## Makefile generated for component 'Torque'. 
 ## 
 ## Makefile     : Torque.mk
-## Generated on : Sat May 21 16:04:34 2022
-## Final product: $(RELATIVE_PATH_TO_ANCHOR)/Torque.exe
+## Generated on : Tue Jul 26 10:42:59 2022
+## Final product: $(RELATIVE_PATH_TO_ANCHOR)/Torque
 ## Product type : executable
 ## 
 ###########################################################################
@@ -15,32 +15,28 @@
 # Macro Descriptions:
 # PRODUCT_NAME            Name of the system to build
 # MAKEFILE                Name of this makefile
-# COMPILER_COMMAND_FILE   Compiler command listing model reference header paths
-# CMD_FILE                Command file
 
 PRODUCT_NAME              = Torque
 MAKEFILE                  = Torque.mk
-MATLAB_ROOT               = C:/PROGRA~1/MATLAB/R2022a
-MATLAB_BIN                = C:/PROGRA~1/MATLAB/R2022a/bin
-MATLAB_ARCH_BIN           = $(MATLAB_BIN)/win64
-START_DIR                 = C:/Users/dalle/Downloads/Vehicle_model_controls_2022-20220521T131145Z-001/Vehicle_model_controls_2022
+MATLAB_ROOT               = /Applications/MATLAB_R2022a.app
+MATLAB_BIN                = /Applications/MATLAB_R2022a.app/bin
+MATLAB_ARCH_BIN           = $(MATLAB_BIN)/maci64
+START_DIR                 = /Users/francesco/Documents/GitHub/fenice-vehicle-model-2022
 SOLVER                    = 
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0
 TGT_FCN_LIB               = ISO_C
 MODEL_HAS_DYNAMICALLY_LOADED_SFCNS = 0
 RELATIVE_PATH_TO_ANCHOR   = ..
-COMPILER_COMMAND_FILE     = Torque_comp.rsp
-CMD_FILE                  = Torque.rsp
-C_STANDARD_OPTS           = -fwrapv
-CPP_STANDARD_OPTS         = -fwrapv
+C_STANDARD_OPTS           = -fno-common -fexceptions
+CPP_STANDARD_OPTS         = -std=c++14 -fno-common -fexceptions
 
 ###########################################################################
 ## TOOLCHAIN SPECIFICATIONS
 ###########################################################################
 
-# Toolchain Name:          MinGW64 | gmake (64-bit Windows)
-# Supported Version(s):    6.x
+# Toolchain Name:          Clang v3.1 | gmake (64-bit Mac)
+# Supported Version(s):    3.1
 # ToolchainInfo Version:   2022a
 # Specification Revision:  1.0
 # 
@@ -50,47 +46,39 @@ CPP_STANDARD_OPTS         = -fwrapv
 
 # C_STANDARD_OPTS
 # CPP_STANDARD_OPTS
-# MINGW_ROOT
-# MINGW_C_STANDARD_OPTS
 
 #-----------
 # MACROS
 #-----------
 
-WARN_FLAGS            = -Wall -W -Wwrite-strings -Winline -Wstrict-prototypes -Wnested-externs -Wpointer-arith -Wcast-align
-WARN_FLAGS_MAX        = $(WARN_FLAGS) -Wcast-qual -Wshadow
-CPP_WARN_FLAGS        = -Wall -W -Wwrite-strings -Winline -Wpointer-arith -Wcast-align
-CPP_WARN_FLAGS_MAX    = $(CPP_WARN_FLAGS) -Wcast-qual -Wshadow
-MW_EXTERNLIB_DIR      = $(MATLAB_ROOT)/extern/lib/win64/mingw64
-SHELL                 = %SystemRoot%/system32/cmd.exe
+ARCHS             = x86_64
+XCODE_SDK_VER     = $(shell perl $(MATLAB_ROOT)/rtw/c/tools/macsdkver.pl)
+XCODE_SDK         = MacOSX$(XCODE_SDK_VER).sdk
+XCODE_DEVEL_DIR   = $(shell xcode-select -print-path)
+XCODE_SDK_ROOT    = $(XCODE_DEVEL_DIR)/Platforms/MacOSX.platform/Developer/SDKs/$(XCODE_SDK)
 
 TOOLCHAIN_SRCS = 
 TOOLCHAIN_INCS = 
-TOOLCHAIN_LIBS = -lws2_32
+TOOLCHAIN_LIBS = 
 
 #------------------------
 # BUILD TOOL COMMANDS
 #------------------------
 
-# C Compiler: GNU C Compiler
-CC_PATH = $(MINGW_ROOT)
-CC = "$(CC_PATH)/gcc"
+# C Compiler: Clang C Compiler
+CC = xcrun clang
 
-# Linker: GNU Linker
-LD_PATH = $(MINGW_ROOT)
-LD = "$(LD_PATH)/g++"
+# Linker: Clang Linker
+LD = xcrun clang++
 
-# C++ Compiler: GNU C++ Compiler
-CPP_PATH = $(MINGW_ROOT)
-CPP = "$(CPP_PATH)/g++"
+# C++ Compiler: Clang C++ Compiler
+CPP = xcrun clang++
 
-# C++ Linker: GNU C++ Linker
-CPP_LD_PATH = $(MINGW_ROOT)
-CPP_LD = "$(CPP_LD_PATH)/g++"
+# C++ Linker: Clang C++ Linker
+CPP_LD = xcrun clang++
 
-# Archiver: GNU Archiver
-AR_PATH = $(MINGW_ROOT)
-AR = "$(AR_PATH)/ar"
+# Archiver: Clang Archiver
+AR = xcrun ar
 
 # MEX Tool: MEX Tool
 MEX_PATH = $(MATLAB_ARCH_BIN)
@@ -103,7 +91,7 @@ DOWNLOAD =
 EXECUTE = $(PRODUCT)
 
 # Builder: GMAKE Utility
-MAKE_PATH = %MATLAB%/bin/win64
+MAKE_PATH = %MATLAB%/bin/maci64
 MAKE = "$(MAKE_PATH)/gmake"
 
 
@@ -122,9 +110,9 @@ OUTPUT_FLAG         = -o
 ARDEBUG             =
 STATICLIB_OUTPUT_FLAG =
 MEX_DEBUG           = -g
-RM                  = @del
+RM                  = @rm -f
 ECHO                = @echo
-MV                  = @move
+MV                  = @mv
 RUN                 =
 
 #--------------------------------------
@@ -132,23 +120,23 @@ RUN                 =
 #--------------------------------------
 
 ARFLAGS              = ruvs
-CFLAGS               = -c $(MINGW_C_STANDARD_OPTS) -m64 \
-                       -O3 -fno-loop-optimize -fno-aggressive-loop-optimizations
-CPPFLAGS             = -c $(CPP_STANDARD_OPTS) -m64 \
-                       -O3 -fno-loop-optimize -fno-aggressive-loop-optimizations
-CPP_LDFLAGS          =  -static -m64
-CPP_SHAREDLIB_LDFLAGS  = -shared -Wl,--no-undefined \
-                         -Wl,--out-implib,$(notdir $(basename $(PRODUCT))).lib
+CFLAGS               = -c -isysroot $(XCODE_SDK_ROOT) -arch $(ARCHS) $(C_STANDARD_OPTS) -mmacosx-version-min=10.15 \
+                       -O3
+CPPFLAGS             = -c -isysroot $(XCODE_SDK_ROOT) -arch $(ARCHS) $(CPP_STANDARD_OPTS) -mmacosx-version-min=10.15 \
+                       -O3
+CPP_LDFLAGS          = -arch $(ARCHS) -isysroot $(XCODE_SDK_ROOT) -Wl,-rpath,@executable_path -Wl,-rpath,@executable_path/$(RELATIVE_PATH_TO_ANCHOR)
+CPP_SHAREDLIB_LDFLAGS  = -dynamiclib -install_name @rpath/$(notdir $(PRODUCT)) -isysroot $(XCODE_SDK_ROOT) \
+                         -Wl,$(LD_NAMESPACE) $(LD_UNDEFS)
 DOWNLOAD_FLAGS       =
 EXECUTE_FLAGS        =
-LDFLAGS              =  -static -m64
+LDFLAGS              = -arch $(ARCHS) -isysroot $(XCODE_SDK_ROOT) -Wl,-rpath,@executable_path -Wl,-rpath,@executable_path/$(RELATIVE_PATH_TO_ANCHOR)
 MEX_CPPFLAGS         =
 MEX_CPPLDFLAGS       =
 MEX_CFLAGS           =
 MEX_LDFLAGS          =
 MAKE_FLAGS           = -f $(MAKEFILE)
-SHAREDLIB_LDFLAGS    = -shared -Wl,--no-undefined \
-                       -Wl,--out-implib,$(notdir $(basename $(PRODUCT))).lib
+SHAREDLIB_LDFLAGS    = -dynamiclib -install_name @rpath/$(notdir $(PRODUCT)) -isysroot $(XCODE_SDK_ROOT) \
+                       -Wl,$(LD_NAMESPACE) $(LD_UNDEFS)
 
 
 
@@ -156,7 +144,7 @@ SHAREDLIB_LDFLAGS    = -shared -Wl,--no-undefined \
 ## OUTPUT INFO
 ###########################################################################
 
-PRODUCT = $(RELATIVE_PATH_TO_ANCHOR)/Torque.exe
+PRODUCT = $(RELATIVE_PATH_TO_ANCHOR)/Torque
 PRODUCT_TYPE = "executable"
 BUILD_TYPE = "Top-Level Standalone Executable"
 
@@ -164,7 +152,7 @@ BUILD_TYPE = "Top-Level Standalone Executable"
 ## INCLUDE PATHS
 ###########################################################################
 
-INCLUDES_BUILDINFO = 
+INCLUDES_BUILDINFO = -I$(START_DIR) -I$(START_DIR)/Torque_ert_rtw -I$(MATLAB_ROOT)/extern/include -I$(MATLAB_ROOT)/simulink/include -I$(MATLAB_ROOT)/rtw/c/src -I$(MATLAB_ROOT)/rtw/c/src/ext_mode/common -I$(MATLAB_ROOT)/rtw/c/ert
 
 INCLUDES = $(INCLUDES_BUILDINFO)
 
@@ -193,9 +181,9 @@ ALL_SRCS = $(SRCS) $(MAIN_SRC)
 ## OBJECTS
 ###########################################################################
 
-OBJS = Torque.obj Torque_data.obj
+OBJS = Torque.o Torque_data.o
 
-MAIN_OBJ = ert_main.obj
+MAIN_OBJ = ert_main.o
 
 ALL_OBJS = $(OBJS) $(MAIN_OBJ)
 
@@ -225,7 +213,7 @@ SYSTEM_LIBS =
 # C Compiler
 #---------------
 
-CFLAGS_BASIC = $(DEFINES) $(INCLUDES) @$(COMPILER_COMMAND_FILE)
+CFLAGS_BASIC = $(DEFINES) $(INCLUDES)
 
 CFLAGS += $(CFLAGS_BASIC)
 
@@ -233,33 +221,13 @@ CFLAGS += $(CFLAGS_BASIC)
 # C++ Compiler
 #-----------------
 
-CPPFLAGS_BASIC = $(DEFINES) $(INCLUDES) @$(COMPILER_COMMAND_FILE)
+CPPFLAGS_BASIC = $(DEFINES) $(INCLUDES)
 
 CPPFLAGS += $(CPPFLAGS_BASIC)
-
-#---------------------
-# MEX C++ Compiler
-#---------------------
-
-MEX_CPP_Compiler_BASIC =  @$(COMPILER_COMMAND_FILE)
-
-MEX_CPPFLAGS += $(MEX_CPP_Compiler_BASIC)
-
-#-----------------
-# MEX Compiler
-#-----------------
-
-MEX_Compiler_BASIC =  @$(COMPILER_COMMAND_FILE)
-
-MEX_CFLAGS += $(MEX_Compiler_BASIC)
 
 ###########################################################################
 ## INLINED COMMANDS
 ###########################################################################
-
-
-MINGW_C_STANDARD_OPTS = $(C_STANDARD_OPTS)
-
 
 ###########################################################################
 ## PHONY TARGETS
@@ -301,7 +269,7 @@ execute : download
 
 $(PRODUCT) : $(OBJS) $(PREBUILT_OBJS) $(MAIN_OBJ)
 	@echo "### Creating standalone executable "$(PRODUCT)" ..."
-	$(LD) $(LDFLAGS) -o $(PRODUCT) @$(CMD_FILE) $(SYSTEM_LIBS) $(TOOLCHAIN_LIBS)
+	$(LD) $(LDFLAGS) -o $(PRODUCT) $(OBJS) $(MAIN_OBJ) $(SYSTEM_LIBS) $(TOOLCHAIN_LIBS)
 	@echo "### Created: $(PRODUCT)"
 
 
@@ -313,63 +281,63 @@ $(PRODUCT) : $(OBJS) $(PREBUILT_OBJS) $(MAIN_OBJ)
 # SOURCE-TO-OBJECT
 #---------------------
 
-%.obj : %.c
+%.o : %.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-%.obj : %.cpp
+%.o : %.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 
-%.obj : $(RELATIVE_PATH_TO_ANCHOR)/%.c
+%.o : $(RELATIVE_PATH_TO_ANCHOR)/%.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-%.obj : $(RELATIVE_PATH_TO_ANCHOR)/%.cpp
+%.o : $(RELATIVE_PATH_TO_ANCHOR)/%.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 
-%.obj : $(START_DIR)/%.c
+%.o : $(START_DIR)/%.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-%.obj : $(START_DIR)/%.cpp
+%.o : $(START_DIR)/%.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 
-%.obj : $(START_DIR)/Torque_ert_rtw/%.c
+%.o : $(START_DIR)/Torque_ert_rtw/%.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-%.obj : $(START_DIR)/Torque_ert_rtw/%.cpp
+%.o : $(START_DIR)/Torque_ert_rtw/%.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 
-%.obj : $(MATLAB_ROOT)/rtw/c/src/%.c
+%.o : $(MATLAB_ROOT)/rtw/c/src/%.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-%.obj : $(MATLAB_ROOT)/rtw/c/src/%.cpp
+%.o : $(MATLAB_ROOT)/rtw/c/src/%.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 
-%.obj : $(MATLAB_ROOT)/simulink/src/%.c
+%.o : $(MATLAB_ROOT)/simulink/src/%.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-%.obj : $(MATLAB_ROOT)/simulink/src/%.cpp
+%.o : $(MATLAB_ROOT)/simulink/src/%.cpp
 	$(CPP) $(CPPFLAGS) -o "$@" "$<"
 
 
-Torque.obj : $(START_DIR)/Torque_ert_rtw/Torque.c
+Torque.o : $(START_DIR)/Torque_ert_rtw/Torque.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-Torque_data.obj : $(START_DIR)/Torque_ert_rtw/Torque_data.c
+Torque_data.o : $(START_DIR)/Torque_ert_rtw/Torque_data.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
-ert_main.obj : $(START_DIR)/Torque_ert_rtw/ert_main.c
+ert_main.o : $(START_DIR)/Torque_ert_rtw/ert_main.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
@@ -377,7 +345,7 @@ ert_main.obj : $(START_DIR)/Torque_ert_rtw/ert_main.c
 ## DEPENDENCIES
 ###########################################################################
 
-$(ALL_OBJS) : rtw_proj.tmw $(COMPILER_COMMAND_FILE) $(MAKEFILE)
+$(ALL_OBJS) : rtw_proj.tmw $(MAKEFILE)
 
 
 ###########################################################################
@@ -414,8 +382,8 @@ info :
 
 clean : 
 	$(ECHO) "### Deleting all derived files..."
-	$(RM) $(subst /,\,$(PRODUCT))
-	$(RM) $(subst /,\,$(ALL_OBJS))
+	$(RM) $(PRODUCT)
+	$(RM) $(ALL_OBJS)
 	$(ECHO) "### Deleted all derived files."
 
 

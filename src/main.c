@@ -9,6 +9,8 @@
 #include "velocity_estimation.h"
 
 
+VES_DataInTypeDef vest_data_in = {};
+VES_DataOutTypeDef vest_data_out = {};
 CTRL_ModelInputTypeDef model_input = {};
 CTRL_ModelOutputTypeDef model_output = {};
 
@@ -16,9 +18,9 @@ const uint8_t UART_MAX_BUF_LEN = 30;
 
 
 void _update_model(float dreq) {
-    model_input.rtU_Driver_req = dreq;
-    // printf("Model input set at %.2f\n", model_input.rtU_Driver_req);
-    model_output = CTRL_step_model(model_input);
+    model_input.dreq = dreq;
+    // printf("Model input set at %.2f\n", model_input.dreq);
+    CTRL_step_model(&model_input, &model_output);
     // printf("mdoel returned: %.2f %.2f\n", model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
 }
 
@@ -26,11 +28,6 @@ void _send_frame(CTRL_PayloadTypeDef frame) {
     uint8_t buf[UART_MAX_BUF_LEN];
     uint8_t pkt_len = CTRL_compose_frame(&frame, buf);
     UART_send_packet_sync(buf, pkt_len);
-}
-
-void signal_handler(int signum) {
-    printf("Sending torque: %.2f, %.2f\n", model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
-    _send_torque(model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
 }
 
 void _send_torque(float tl, float tr) {
@@ -44,6 +41,11 @@ void _send_torque(float tl, float tr) {
     frame.ParamID = CTRL_PARAMID_TMRR;
     frame.ParamVal = tr;
     _send_frame(frame);
+}
+
+void signal_handler(int signum) {
+    printf("Sending torque: %.2f, %.2f\n", model_output.tm_rl, model_output.tm_rr);
+    _send_torque(model_output.tm_rl, model_output.tm_rr);
 }
 
 int main() {

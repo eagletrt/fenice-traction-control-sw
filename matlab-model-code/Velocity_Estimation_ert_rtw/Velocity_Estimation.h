@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Velocity_Estimation'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.255
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:02:01 2022
+ * C/C++ source code generated on : Wed Jul 27 11:29:19 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -76,14 +76,21 @@ struct tag_RTM {
 extern const ConstP rtConstP;
 
 /* Model entry point functions */
-extern void Velocity_Estimation_initialize(RT_MODEL *const rtM, real_T
-  *rtU_omega_fl, real_T *rtU_omega_fr, real_T *rtU_omega_rl, real_T
-  *rtU_omega_rr, real_T *rtU_axG, real_T *rtU_map_motor, real_T *rtU_u, real_T
-  *rtY_u_bar, real_T *rtY_Tmax_rr, real_T *rtY_Tmax_rl);
-extern void Velocity_Estimation_step(RT_MODEL *const rtM, real_T rtU_omega_fl,
-  real_T rtU_omega_fr, real_T rtU_omega_rl, real_T rtU_omega_rr, real_T rtU_axG,
-  real_T rtU_map_motor, real_T *rtY_u_bar, real_T *rtY_Tmax_rr, real_T
-  *rtY_Tmax_rl);
+extern void Velocity_Estimation_initialize(RT_MODEL *const rtM);
+extern void Velocity_Estimation_step(RT_MODEL *const rtM);
+
+/* Exported data declaration */
+
+/* Data with Exported storage */
+extern real_T rtTmax_rl;               /* '<Root>/Tmax_rl' */
+extern real_T rtTmax_rr;               /* '<Root>/Tmax_rr' */
+extern real_T rtaxG;                   /* '<Root>/a_x' */
+extern real_T rtomega_fl;              /* '<Root>/omega_fl' */
+extern real_T rtomega_fr;              /* '<Root>/omega_fr' */
+extern real_T rtomega_rl;              /* '<Root>/omega_rl' */
+extern real_T rtomega_rr;              /* '<Root>/omega_rr' */
+extern real_T rtsignal10;              /* '<Root>/map' */
+extern real_T rtu_bar;                 /* '<Root>/u_bar' */
 
 /*-
  * These blocks were eliminated from the model due to optimizations:

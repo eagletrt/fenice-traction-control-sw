@@ -10,22 +10,26 @@ typedef enum {
 } CTRL_MODE;
 
 typedef struct {
-    double rtU_Driver_req;
-    double rtU_u_bar;
-    double rtU_omega_rr;
-    double rtU_omega_rl;
-    double rtU_yaw_rate;
-    double rtU_Steeringangle;
-    double rtU_Brake;
+    double dreq;
+    double delta;
+    double tmax_rl;
+    double tmax_rr;
+    double omega_rl;
+    double omega_rr;
+    double map_tv;
+    double map_sc;
+    double brake;
+    double bar;
+    double omega;
 } CTRL_ModelInputTypeDef;
 
 typedef struct {
-    double rtY_Tm_rr;
-    double rtY_Tm_rl;
+    double tm_rl;
+    double tm_rr;
 } CTRL_ModelOutputTypeDef;
 
 
 void CTRL_change_mode(CTRL_MODE);
-CTRL_ModelOutputTypeDef CTRL_step_model(CTRL_ModelInputTypeDef);
+void CTRL_step_model(CTRL_ModelInputTypeDef*, CTRL_ModelOutputTypeDef*);
 
 #endif

@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'Velocity_Estimation'.
  *
- * Model version                  : 5.241
+ * Model version                  : 5.255
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sat May 21 16:02:01 2022
+ * C/C++ source code generated on : Wed Jul 27 11:29:19 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM 7
@@ -26,36 +26,6 @@
 static RT_MODEL rtM_;
 static RT_MODEL *const rtMPtr = &rtM_; /* Real-time model */
 static DW rtDW;                        /* Observable states */
-
-/* '<Root>/omega_fl' */
-static real_T rtU_omega_fl;
-
-/* '<Root>/omega_fr' */
-static real_T rtU_omega_fr;
-
-/* '<Root>/omega_rl' */
-static real_T rtU_omega_rl;
-
-/* '<Root>/omega_rr' */
-static real_T rtU_omega_rr;
-
-/* '<Root>/a_x' */
-static real_T rtU_axG;
-
-/* '<Root>/map' */
-static real_T rtU_map_motor;
-
-/* '<Root>/Inport1' */
-static real_T rtU_u;
-
-/* '<Root>/u_bar' */
-static real_T rtY_u_bar;
-
-/* '<Root>/Tmax_rr' */
-static real_T rtY_Tmax_rr;
-
-/* '<Root>/Tmax_rl' */
-static real_T rtY_Tmax_rl;
 
 /*
  * Associating rt_OneStep with a real-time clock or interrupt service routine
@@ -88,8 +58,7 @@ void rt_OneStep(RT_MODEL *const rtM)
   /* Set model inputs here */
 
   /* Step the model */
-  Velocity_Estimation_step(rtM, rtU_omega_fl, rtU_omega_fr, rtU_omega_rl,
-    rtU_omega_rr, rtU_axG, rtU_map_motor, &rtY_u_bar, &rtY_Tmax_rr, &rtY_Tmax_rl);
+  Velocity_Estimation_step(rtM);
 
   /* Get model outputs here */
 
@@ -119,9 +88,7 @@ int_T main(int_T argc, const char *argv[])
   rtM->dwork = &rtDW;
 
   /* Initialize model */
-  Velocity_Estimation_initialize(rtM, &rtU_omega_fl, &rtU_omega_fr,
-    &rtU_omega_rl, &rtU_omega_rr, &rtU_axG, &rtU_map_motor, &rtU_u, &rtY_u_bar,
-    &rtY_Tmax_rr, &rtY_Tmax_rl);
+  Velocity_Estimation_initialize(rtM);
 
   /* Attach rt_OneStep to a timer or interrupt service routine with
    * period 0.001 seconds (base rate of the model) here.
