@@ -50,8 +50,8 @@ bool VES_init() {
     _VES_axG = dlsym(lib_handle, "rtaxG");
     _VES_map = dlsym(lib_handle, "rtsignal10");
     _VES_bar = dlsym(lib_handle, "rtu_bar");
-    _VES_Tmax_rl = dlsym(lib_handle, "rtTmac_rl");
-    _VES_Tmax_rr = dlsym(lib_handle, "rtTmac_rr");
+    _VES_Tmax_rl = dlsym(lib_handle, "rtTmax_rl");
+    _VES_Tmax_rr = dlsym(lib_handle, "rtTmax_rr");
 
     /* Check that variable pointers are not NULL and initiallize them to 0 */
     if (_VES_omega_fl && _VES_omega_fr && _VES_omega_rl && _VES_omega_rr && _VES_axG && _VES_map && \
@@ -91,7 +91,7 @@ void VES_step_model(VES_DataInTypeDef *data_in, VES_DataOutTypeDef *data_out) {
     *_VES_map = data_in->torque_map;
 
     /* Step the model */
-    _VES_init_model_fn(&_VES_rt_model);
+    _VES_step_model_fn(&_VES_rt_model);
 
     /* Copy back the output data */
     data_out->bar = *_VES_bar;

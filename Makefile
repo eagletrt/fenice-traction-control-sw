@@ -9,7 +9,7 @@ BUILD_DIR := ./build
 # --------------------------------- Variables ----------------------------------
 
 # Target executables (main program and model servers)
-ALL_TARGETS := fenice-traction-control libctrl-ve.so libctrl-sc.so libctrl-tv.so libctrl-all.so libctrl-no.so
+ALL_TARGETS := fenice-traction-control test-models libctrl-ve.so libctrl-sc.so libctrl-tv.so libctrl-all.so libctrl-no.so
 
 # Matlab models base directory
 MATLAB_ROOT := ./matlab-model-code
@@ -37,6 +37,7 @@ MODEL_NO_SRCS  := $(addprefix $(MODEL_NO_DIR)/, No.c)
 # Main program source files
 MAIN_SRC_DIR := ./src
 MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c ../micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c)
+TEST_SRCS := $(addprefix $(MAIN_SRC_DIR)/, test_models.c models_interface.c velocity_estimation.c)
 
 # ------------------------------- Build targets --------------------------------
 
@@ -69,7 +70,12 @@ $(BUILD_DIR)/libctrl-no.so: $(MODEL_NO_SRCS)
 $(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
 	mkdir -p $(BUILD_DIR)
 	git submodule update --init --recursive
-	$(CC) $(CFLAGS_ALL) $(CFLAGS_MAIN) -ldl $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $(CFLAGS_MAIN) $^ -o $@ $(LDFLAGS)
+
+# Build target for testing the models
+$(BUILD_DIR)/test-models: $(TEST_SRCS)
+	mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS_ALL) $^ -o $@ $(LDFLAGS)
 
 # Build all
 all: $(addprefix $(BUILD_DIR)/,$(ALL_TARGETS))
