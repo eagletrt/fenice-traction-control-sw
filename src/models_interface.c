@@ -146,9 +146,11 @@ bool _load_lib_syms() {
     _CTRL_init_model_fn = dlsym(_CTRL_lib_handle, i_fn_sym);
     _CTRL_step_model_fn = dlsym(_CTRL_lib_handle, s_fn_sym);
 
-    if (dlerror()) {
+    if (_CTRL_init_model_fn == NULL || _CTRL_step_model_fn == NULL || dlerror()) {
         printf("Error: %s\n", dlerror());
         return false;
+    } else {
+        _CTRL_init_model_fn(&_CTRL_rt_model);
     }
 
     /* Load global variables */
@@ -164,7 +166,7 @@ bool _load_lib_syms() {
     _CTRL_bar      = dlsym(_CTRL_lib_handle, "rtu_bar");
     _CTRL_omega    = dlsym(_CTRL_lib_handle, "rtyaw_rate");
     _CTRL_t_rl     = dlsym(_CTRL_lib_handle, "rtTm_rl_a");
-    _CTRL_t_rr     = dlsym(_CTRL_lib_handle, "rtTm_rr_a");
+    _CTRL_t_rr     = dlsym(_CTRL_lib_handle, "rtTm_rr_m");
 
     if (_CTRL_dreq && _CTRL_delta && _CTRL_tmax_rl && _CTRL_tmax_rr && _CTRL_omega_rl && _CTRL_omega_rr &&
     _CTRL_map_tv && _CTRL_map_sc && _CTRL_brake && _CTRL_bar && _CTRL_omega &&

@@ -33,14 +33,17 @@ def plot(expected, actual):
     fig, axs = plt.subplots(3, 1)
     axs[0].plot(expected['bar'], label="Expected uBar")
     axs[0].plot(actual['bar'], label="Actual uBar")
+    axs[0].grid()
     axs[0].legend()
 
     axs[1].plot(expected['tmax_rr'], label="Expected Tmax_rr")
     axs[1].plot(actual['tmax_rr'], label="Actual Tmax_rr")
+    axs[1].grid()
     axs[1].legend()
 
     axs[2].plot(expected['tmax_rl'], label="Expected Tmax_rl")
     axs[2].plot(actual['tmax_rl'], label="Actual Tmax_rl")
+    axs[2].grid()
     axs[2].legend()
 
     plt.show()
