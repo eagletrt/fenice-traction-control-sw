@@ -2,20 +2,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include "string.h"
 #include "models_interface.h"
 
 
 /* Ridefinition of Matlab's data structure for the model */
 typedef struct {
-  double Integrator_DSTATE;            /* '<S47>/Integrator' */
-  double DiscreteTimeIntegrator1_DSTATE;/* '<S79>/Discrete-Time Integrator1' */
-  double DiscreteTimeIntegrator1_DSTAT_k;/* '<S71>/Discrete-Time Integrator1' */
-  uint32_t m_bpIndex;                  /* '<S66>/1-D Lookup Table3' */
-  uint32_t m_bpIndex_h;                /* '<S65>/1-D Lookup Table1' */
-  uint32_t m_bpIndex_f;                /* '<S66>/1-D Lookup Table2' */
-  uint32_t m_bpIndex_k;                /* '<S65>/1-D Lookup Table' */
-  int8_t DiscreteTimeIntegrator1_PrevRes;/* '<S79>/Discrete-Time Integrator1' */
-  int8_t DiscreteTimeIntegrator1_PrevR_o;/* '<S71>/Discrete-Time Integrator1' */
+  uint8_t dummy_memory[64];
 } Matlab_DW;
 
 /* Real time model data struture */
@@ -70,6 +63,9 @@ void CTRL_step_model(CTRL_ModelInputTypeDef *data_in, CTRL_ModelOutputTypeDef *d
 void CTRL_change_mode(CTRL_MODE new_mode) {
     _CTRL_curr_mode = new_mode;
 
+    /* Reset model state */
+    memset(&(_CTRL_DW.dummy_memory), sizeof(_CTRL_DW.dummy_memory[0]), sizeof(_CTRL_DW.dummy_memory));
+    
     /* Load current model library and its symbols */
     _load_model_lib();
     _load_lib_syms();

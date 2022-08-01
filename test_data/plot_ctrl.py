@@ -28,7 +28,7 @@ def read_files(f_exp, f_act):
 def plot(expected, actual):
     fig, axs = plt.subplots(2, 1, sharex=True)
     axs[0].plot(expected['t_rl'], label="Expected T_rl")
-    axs[0].plot(actual['t_rr'], label="Actual T_rl")
+    axs[0].plot(actual['t_rl'], label="Actual T_rl")
     axs[0].grid()
     axs[0].legend()
 
