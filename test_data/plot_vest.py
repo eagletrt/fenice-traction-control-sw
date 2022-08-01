@@ -47,7 +47,7 @@ def plot(expected, actual):
 
 
 if __name__ == '__main__':
-    e, a = read_files('vest_test_data/vel_output_prova1.csv', 'vest_test_data/vel_test_output1.csv')
+    e, a = read_files('vest/vel_output_prova1.csv', 'vest/vel_test_output1.csv')
     plot(e, a)
-    e, a = read_files('vest_test_data/vel_output_prova2.csv', 'vest_test_data/vel_test_output2.csv')
+    e, a = read_files('vest/vel_output_prova2.csv', 'vest/vel_test_output2.csv')
     plot(e, a)
