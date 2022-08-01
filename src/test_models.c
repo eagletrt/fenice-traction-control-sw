@@ -36,12 +36,12 @@ void test_velocity_estimation(char* in_fname, char* out_fname) {
     }
 }
 
-void test_slip(char* in_fname, char* out_fname) {
+void test_ctrl(char* in_fname, char* out_fname, CTRL_MODE ctrl_mode) {
     FILE *in_f = fopen(in_fname, "r");
     FILE *out_f = fopen(out_fname, "w");
 
     if (!in_f || !out_f) {
-        printf("[slip] Error opening a file\n");
+        printf("[ctrl] Error opening a file\n");
         return;
     }
 
@@ -51,7 +51,7 @@ void test_slip(char* in_fname, char* out_fname) {
     CTRL_ModelOutputTypeDef data_out = { 0U };
     double ctrl_switch = 0.0f;
 
-    CTRL_change_mode(CTRL_SC);
+    CTRL_change_mode(ctrl_mode);
 
     while (!feof(in_f)) {
         fscanf(
@@ -84,12 +84,13 @@ void test_slip(char* in_fname, char* out_fname) {
 
         fprintf(out_f, "%lf,%lf\n", data_out.tm_rr, data_out.tm_rl);
     }
-
 }
 
 
 int main() {
     test_velocity_estimation("../test_data/vest/vel_input_prova2.csv", "../test_data/vest/vel_test_output2.csv");
-    test_slip("../test_data/slip/input.csv", "../test_data/slip/test_output.csv");
+    test_ctrl("../test_data/slip/input.csv", "../test_data/slip/test_output.csv", CTRL_SC);
+    test_ctrl("../test_data/torque/input.csv", "../test_data/torque/test_output.csv", CTRL_TV);
+    test_ctrl("../test_data/all/input.csv", "../test_data/all/test_output.csv", CTRL_ALL);
     return 1;
 }

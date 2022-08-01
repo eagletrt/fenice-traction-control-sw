@@ -43,3 +43,7 @@ def plot(expected, actual):
 if __name__ == '__main__':
     e, a = read_files('slip/output.csv', 'slip/test_output.csv')
     plot(e, a)
+    e, a = read_files('torque/output.csv', 'torque/test_output.csv')
+    plot(e, a)
+    e, a = read_files('all/output.csv', 'all/test_output.csv')
+    plot(e, a)
