@@ -92,5 +92,9 @@ int main() {
     test_ctrl("../test_data/slip/input.csv", "../test_data/slip/test_output.csv", CTRL_SC);
     test_ctrl("../test_data/torque/input.csv", "../test_data/torque/test_output.csv", CTRL_TV);
     test_ctrl("../test_data/all/input.csv", "../test_data/all/test_output.csv", CTRL_ALL);
+
+    test_ctrl("../test_data/slip_3/control_input_m1c2.csv", "../test_data/slip_3/control_output_m1c2_test.csv", CTRL_SC);
+    test_ctrl("../test_data/slip_3/control_input_m2c2.csv", "../test_data/slip_3/control_output_m2c2_test.csv", CTRL_SC);
+    test_ctrl("../test_data/slip_3/control_input_m8c2.csv", "../test_data/slip_3/control_output_m8c2_test.csv", CTRL_SC);
     return 1;
 }

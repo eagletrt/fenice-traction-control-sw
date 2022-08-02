@@ -27,13 +27,13 @@ def read_files(f_exp, f_act):
 
 def plot(expected, actual):
     fig, axs = plt.subplots(2, 1, sharex=True)
-    axs[0].plot(expected['t_rl'], label="Expected T_rl")
-    axs[0].plot(actual['t_rl'], label="Actual T_rl")
+    axs[0].plot(expected['t_rl'], label="Expected T_rl", alpha=0.8)
+    axs[0].plot(actual['t_rl'], label="Actual T_rl", alpha=0.8)
     axs[0].grid()
     axs[0].legend()
 
-    axs[1].plot(expected['t_rr'], label="Expected T_rr")
-    axs[1].plot(actual['t_rr'], label="Actual T_rr")
+    axs[1].plot(expected['t_rr'], label="Expected T_rr", alpha=0.8)
+    axs[1].plot(actual['t_rr'], label="Actual T_rr", alpha=0.8)
     axs[1].grid()
     axs[1].legend()
 
@@ -41,9 +41,17 @@ def plot(expected, actual):
 
 
 if __name__ == '__main__':
+    '''
     e, a = read_files('slip/output.csv', 'slip/test_output.csv')
     plot(e, a)
     e, a = read_files('torque/output.csv', 'torque/test_output.csv')
     plot(e, a)
     e, a = read_files('all/output.csv', 'all/test_output.csv')
+    plot(e, a)
+    '''
+    e, a = read_files('test_data/slip_3/control_output_m1c2.csv', 'test_data/slip_3/control_output_m1c2_test.csv')
+    plot(e, a)
+    e, a = read_files('test_data/slip_3/control_output_m2c2.csv', 'test_data/slip_3/control_output_m2c2_test.csv')
+    plot(e, a)
+    e, a = read_files('test_data/slip_3/control_output_m8c2.csv', 'test_data/slip_3/control_output_m8c2_test.csv')
     plot(e, a)
