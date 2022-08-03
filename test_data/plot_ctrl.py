@@ -45,14 +45,12 @@ def plot(expected, actual, t=None):
 
 
 if __name__ == '__main__':
-    '''
-    e, a = read_files('slip/output.csv', 'slip/test_output.csv')
-    plot(e, a)
-    e, a = read_files('torque/output.csv', 'torque/test_output.csv')
-    plot(e, a)
-    e, a = read_files('all/output.csv', 'all/test_output.csv')
-    plot(e, a)
-    '''
+    e, a = read_files('test_data/slip/output.csv', 'test_data/slip/test_output.csv')
+    plot(e, a, "Slip Control")
+    e, a = read_files('test_data/torque/output.csv', 'test_data/torque/test_output.csv')
+    plot(e, a, "Torque Vectoring")
+    e, a = read_files('test_data/all/output.csv', 'test_data/all/test_output.csv')
+    plot(e, a, "All")
     e, a = read_files('test_data/slip_4/control_output_m3c20.csv', 'test_data/slip_4/control_output_m3c20_test.csv')
     plot(e, a, "m3c20")
     e, a = read_files('test_data/slip_4/control_output_m3c21.csv', 'test_data/slip_4/control_output_m3c21_test.csv')
