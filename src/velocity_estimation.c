@@ -1,4 +1,5 @@
 #include "velocity_estimation.h"
+#include "logger.h"
 #include <dlfcn.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -29,6 +30,7 @@ void (*_VES_init_model_fn)(_VES_RTM *);
 void (*_VES_step_model_fn)(_VES_RTM *);
 _VES_DW _VES_dw = { 0U };
 _VES_RTM _VES_rt_model = { NULL, &_VES_dw };
+bool _VES_initialization_ok = false;
 
 
 bool VES_init() {
@@ -36,7 +38,7 @@ bool VES_init() {
     void *lib_handle = dlopen(VES_LIB_PATH, RTLD_NOW);
 
     if (lib_handle == NULL || dlerror()) {
-        printf("Error while loading the velocity estimation dynamic library: %s", dlerror());
+        LOG_write(LOGLEVEL_ERR, "[VES] Error while loading the velocity estimation dynamic library: %s", dlerror());
         return false;
     }
 
@@ -48,7 +50,7 @@ bool VES_init() {
     _VES_omega_rl = dlsym(lib_handle, "rtomega_rl");
     _VES_omega_rr = dlsym(lib_handle, "rtomega_rr");
     _VES_axG = dlsym(lib_handle, "rtaxG");
-    _VES_map = dlsym(lib_handle, "rtsignal10");
+    _VES_map = dlsym(lib_handle, "rtmap_motor");
     _VES_bar = dlsym(lib_handle, "rtu_bar");
     _VES_Tmax_rl = dlsym(lib_handle, "rtTmax_rl");
     _VES_Tmax_rr = dlsym(lib_handle, "rtTmax_rr");
@@ -66,7 +68,7 @@ bool VES_init() {
         *_VES_Tmax_rl = 0.0;
         *_VES_Tmax_rr = 0.0;
     } else {
-        printf("Error while loading a velocity estimation library variable: %s", dlerror());
+        LOG_write(LOGLEVEL_ERR, "[VES] Error while loading a velocity estimation library variable: %s", dlerror());
         return false;
     }
 
@@ -74,14 +76,19 @@ bool VES_init() {
     if (_VES_init_model_fn && _VES_step_model_fn) {
         _VES_init_model_fn(&_VES_rt_model);
     } else {
-        printf("Error while loading a velocity estimation library function: %s", dlerror());
+        LOG_write(LOGLEVEL_ERR, "[VES] Error while loading a velocity estimation library function: %s", dlerror());
         return false;
     }
 
-    return true;
+    return (_VES_initialization_ok = true);
 }
 
 void VES_step_model(VES_DataInTypeDef *data_in, VES_DataOutTypeDef *data_out) {
+    if (!_VES_initialization_ok) {
+        LOG_write(LOGLEVEL_ERR, "[VES] The model is not initialized");
+        return;
+    }
+
     /* Copy over the input data */
     *_VES_omega_fl = data_in->omega_fl;
     *_VES_omega_fr = data_in->omega_fr;

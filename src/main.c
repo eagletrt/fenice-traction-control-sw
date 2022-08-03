@@ -7,6 +7,7 @@
 #include "uart_interface.h"
 #include "ctrl-nwk-utils.h"
 #include "velocity_estimation.h"
+#include "logger.h"
 
 
 VES_DataInTypeDef vest_data_in = {};
@@ -86,4 +87,8 @@ int main() {
 
         _update_model(ctrl_frame.ParamVal);
     }
+}
+
+void _LOG_write_raw(char *txt) {
+    printf(txt);
 }

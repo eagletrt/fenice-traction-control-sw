@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS_ALL = -g -Wall
+CFLAGS_ALL = -g -Wall -Imicro-libs/logger
 CFLAGS_MODELS := -fpic -shared
 CFLAGS_MAIN := -ldl -Imicro-libs/ctrl-nwk-utils
 LDFLAGS = -lm
@@ -12,7 +12,7 @@ BUILD_DIR := ./build
 ALL_TARGETS := fenice-traction-control test-models libctrl-ve.so libctrl-sc.so libctrl-tv.so libctrl-all.so libctrl-no.so
 
 # Matlab models base directory
-MATLAB_ROOT := ./matlab-model-code
+MATLAB_ROOT := ./fenice-vehicle-model/C_code
 
 # Velocity Estimation model source
 MODEL_VE_DIR   := $(MATLAB_ROOT)/Velocity_Estimation_ert_rtw
@@ -36,35 +36,35 @@ MODEL_NO_SRCS  := $(addprefix $(MODEL_NO_DIR)/, No.c)
 
 # Main program source files
 MAIN_SRC_DIR := ./src
-MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c ../micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c)
-TEST_SRCS := $(addprefix $(MAIN_SRC_DIR)/, test_models.c models_interface.c velocity_estimation.c)
+MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c ../micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c ../micro-libs/logger/logger.c)
+TEST_SRCS := $(addprefix $(MAIN_SRC_DIR)/, test_models.c models_interface.c velocity_estimation.c ../micro-libs/logger/logger.c)
 
 # ------------------------------- Build targets --------------------------------
 
 # Build target for the velocity-estimation library
 $(BUILD_DIR)/libctrl-ve.so: $(MODEL_VE_SRCS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT) -I$(MODEL_VE_DIR) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT)/lib -I$(MODEL_VE_DIR) $^ -o $@ $(LDFLAGS)
 
 # Build target for the slip-control library
 $(BUILD_DIR)/libctrl-sc.so: $(MODEL_SC_SRCS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT) -I$(MODEL_SC_DIR) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT)/lib -I$(MODEL_SC_DIR) $^ -o $@ $(LDFLAGS)
 
 # Build target for the torque-vectoring library
 $(BUILD_DIR)/libctrl-tv.so: $(MODEL_TV_SRCS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT) -I$(MODEL_TV_DIR) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT)/lib -I$(MODEL_TV_DIR) $^ -o $@ $(LDFLAGS)
 
 # Build target for the complete-control library
 $(BUILD_DIR)/libctrl-all.so: $(MODEL_ALL_SRCS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT) -I$(MODEL_ALL_DIR) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT)/lib -I$(MODEL_ALL_DIR) $^ -o $@ $(LDFLAGS)
 
 # Build target for the no-control library
 $(BUILD_DIR)/libctrl-no.so: $(MODEL_NO_SRCS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT) -I$(MODEL_NO_DIR) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT)/lib -I$(MODEL_NO_DIR) $^ -o $@ $(LDFLAGS)
 
 # Build target for the main program
 $(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
