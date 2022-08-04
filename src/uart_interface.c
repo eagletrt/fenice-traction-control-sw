@@ -7,6 +7,7 @@
 #include <string.h>
 #include "uart_interface.h"
 #include "ctrl-nwk-utils.h"
+#include "logger.h"
 
 
 int UART_fd = -1;
@@ -21,7 +22,7 @@ bool UART_init() {
 	UART_fd = open(uart_dev, O_RDWR | O_NOCTTY);
 
 	if (UART_fd == -1) {
-		printf("Error opening serial port: %s\n", uart_dev);
+		LOG_write(LOGLEVEL_ERR, "[UART] Error opening serial port: %s", uart_dev);
         return false;
     }
 
@@ -49,25 +50,35 @@ bool UART_init() {
  */
 int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
 	if (UART_fd == -1) {
-		printf("Error: serial port is not open\n");
+		LOG_write(LOGLEVEL_ERR, "[UART] Error: serial port is not open");
         return 0;
     }
 
     uint8_t idx = 0;
 
     while (!CTRL_is_frame_wellformed(buf, idx)) {
-        int8_t bytes_read = read(UART_fd, buf+idx, 1);
-
-        if (bytes_read == -1) {
-            printf("Error: %s\n", strerror(errno));
-            return 0;
+        /* Read one byte */
+        if (read(UART_fd, buf+idx, 1) != -1) {
+            idx++;
         } else {
-            idx += bytes_read;
+            LOG_write(LOGLEVEL_ERR, "[UART] Read error: %s", strerror(errno));
+            return 0;
         }
 
-        if (idx == max_len) {
-            printf("Maximum buffer size was reached but no valid packet was detected\n");
-            return 0;
+        /* Reset idx to 0 if: */
+        /*   1) The beginning of the buffer is not a valid header */
+        if (idx == 2 && (buf[0] != CTRL_DLE || buf[1] != CTRL_STX)) {
+            idx = 0;
+        }
+        /*   2) The maximum frame size was read but it makes no sense */
+        if (idx == CTRL_MAX_FRAME_LEN) {
+            LOG_write(LOGLEVEL_INFO, "[UART] Max frame size was read but no ending sequence was received");
+            idx = 0;
+        }
+        /*   3) Despite not reading a valid packet the buffer filled up */
+        if (idx >= (max_len - 1)) {
+            LOG_write(LOGLEVEL_WARN, "[UART] Buffer overrun");
+            idx = 0;
         }
     }
 
@@ -79,7 +90,7 @@ int UART_get_packet_sync(uint8_t *buf, uint8_t max_len) {
  */
 int UART_send_packet_sync(uint8_t *buf, uint8_t pkt_len) {
 	if (UART_fd == -1) {
-		printf("Error: serial port is not open\n");
+		LOG_write(LOGLEVEL_ERR, "[UART] Error: serial port is not open");
         return 0;
     }
 
