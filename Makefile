@@ -36,8 +36,10 @@ MODEL_NO_SRCS  := $(addprefix $(MODEL_NO_DIR)/, No.c)
 
 # Main program source files
 MAIN_SRC_DIR := ./src
-MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c ../micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c ../micro-libs/logger/logger.c)
-TEST_SRCS := $(addprefix $(MAIN_SRC_DIR)/, test_models.c models_interface.c velocity_estimation.c ../micro-libs/logger/logger.c)
+MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c data_logger.c)
+MAIN_SRCS := $(MAIN_SRCS) micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c micro-libs/logger/logger.c
+TEST_SRCS := $(addprefix $(MAIN_SRC_DIR)/, test_models.c models_interface.c velocity_estimation.c)
+TEST_SRCS := $(TEST_SRCS) micro-libs/logger/logger.c
 
 # ------------------------------- Build targets --------------------------------
 
