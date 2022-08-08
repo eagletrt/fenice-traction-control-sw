@@ -51,3 +51,9 @@ void CLOG_log_ctrl_frame(CTRL_PayloadTypeDef *frame) {
 void CLOG_log_text(uint8_t *txt) {
     fprintf(f_txt, "%llu - %s\n", get_microseconds(), txt);
 }
+
+void CLOG_flush_file_buffers() {
+    fflush(f_raw_data);
+    fflush(f_frames);
+    fflush(f_txt);
+}

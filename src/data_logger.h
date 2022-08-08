@@ -8,5 +8,6 @@ void CLOG_init();
 void CLOG_log_raw_packet(uint8_t *buf, uint8_t buf_len);
 void CLOG_log_ctrl_frame(CTRL_PayloadTypeDef *frame);
 void CLOG_log_text(uint8_t *txt);
+void CLOG_flush_file_buffers();
 
 #endif

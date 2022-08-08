@@ -127,6 +127,7 @@ int main() {
         if (is_response_timer_elapsed) {
             _update_models();
             _send_torque();
+            CLOG_flush_file_buffers();
             is_response_timer_elapsed = false;
         }
     }
