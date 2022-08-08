@@ -68,7 +68,7 @@ $(BUILD_DIR)/libctrl-no.so: $(MODEL_NO_SRCS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS_ALL) $(CFLAGS_MODELS) $(CSHAREDFLAGS) -I$(MATLAB_ROOT)/lib -I$(MODEL_NO_DIR) $^ -o $@ $(LDFLAGS)
 
-micro-libs/*:
+micro-libs/%:
 	git submodule update --init --recursive micro-libs
 
 # Build target for the main program
