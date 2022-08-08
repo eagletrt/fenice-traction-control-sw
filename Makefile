@@ -71,12 +71,13 @@ $(BUILD_DIR)/libctrl-no.so: $(MODEL_NO_SRCS)
 # Build target for the main program
 $(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
 	mkdir -p $(BUILD_DIR)
-	git submodule update --init --recursive
+	git submodule update --init --recursive micro-libs
 	$(CC) $(CFLAGS_ALL) $(CFLAGS_MAIN) $^ -o $@ $(LDFLAGS)
 
 # Build target for testing the models
 $(BUILD_DIR)/test-models: $(TEST_SRCS)
 	mkdir -p $(BUILD_DIR)
+	git submodule update --init --recursive micro-libs
 	$(CC) $(CFLAGS_ALL) $^ -o $@ $(LDFLAGS)
 
 # Build all
