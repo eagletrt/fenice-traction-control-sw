@@ -3,26 +3,70 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/time.h>
+#include "time.h"
 #include "models_interface.h"
 #include "uart_interface.h"
 #include "ctrl-nwk-utils.h"
 #include "velocity_estimation.h"
 #include "logger.h"
+#include "data_logger.h"
 
 
-VES_DataInTypeDef vest_data_in = {};
-VES_DataOutTypeDef vest_data_out = {};
-CTRL_ModelInputTypeDef model_input = {};
-CTRL_ModelOutputTypeDef model_output = {};
+VES_DataInTypeDef vest_data_in = { 0U };
+VES_DataOutTypeDef vest_data_out = { 0U };
+CTRL_ModelInputTypeDef model_input = { 0U };
+CTRL_ModelOutputTypeDef model_output = { 0U };
+uint64_t get_microseconds();
 
 const uint8_t UART_MAX_BUF_LEN = 30;
+bool is_response_timer_elapsed = false;
 
 
-void _update_model(float dreq) {
-    model_input.dreq = dreq;
-    // printf("Model input set at %.2f\n", model_input.dreq);
+void _set_model_param(uint8_t id, float v) {
+    switch (id) {
+        case CTRL_PARAMID_DREQ:
+            model_input.dreq = v;
+            break;
+        case CTRL_PARAMID_STEER_ANG:
+            model_input.delta = v;
+            break;
+        case CTRL_PARAMID_YAW:
+            model_input.omega = v;
+            break;
+        case CTRL_PARAMID_O_RR:
+            vest_data_in.omega_rr = v;
+            model_input.omega_rr = v;
+            break;
+        case CTRL_PARAMID_O_RL:
+            vest_data_in.omega_rl = v;
+            model_input.omega_rl = v;
+            break;
+        case CTRL_PARAMID_O_FR:
+            vest_data_in.omega_fr = v;
+            break;
+        case CTRL_PARAMID_O_FL:
+            vest_data_in.omega_fl = v;
+            break;
+        case CTRL_PARAMID_AX_G:
+            vest_data_in.ax_g = v;
+            break;
+        case CTRL_PARAMID_BRAKE:
+            model_input.brake = v;
+            break;
+        default:
+            LOG_write(LOGLEVEL_WARN, "Unknown param id: %d", id);
+            break;
+    }
+}
+
+void _update_models() {
+    VES_step_model(&vest_data_in, &vest_data_out);
+
+    model_input.bar = vest_data_out.bar;
+    model_input.tmax_rl = vest_data_out.tmax_rl;
+    model_input.tmax_rr = vest_data_out.tmax_rr;
+
     CTRL_step_model(&model_input, &model_output);
-    // printf("mdoel returned: %.2f %.2f\n", model_output.rtY_Tm_rl, model_output.rtY_Tm_rr);
 }
 
 void _send_frame(CTRL_PayloadTypeDef frame) {
@@ -31,25 +75,26 @@ void _send_frame(CTRL_PayloadTypeDef frame) {
     UART_send_packet_sync(buf, pkt_len);
 }
 
-void _send_torque(float tl, float tr) {
+void _send_torque() {
     CTRL_PayloadTypeDef frame;
-    frame.CRC = 0x0;
+    frame.CRC16 = 0x0;
 
     frame.ParamID = CTRL_PARAMID_TMLL;
-    frame.ParamVal = tl;
+    frame.ParamVal = model_output.tm_rl;
     _send_frame(frame);
 
     frame.ParamID = CTRL_PARAMID_TMRR;
-    frame.ParamVal = tr;
+    frame.ParamVal = model_output.tm_rr;
     _send_frame(frame);
 }
 
 void signal_handler(int signum) {
-    printf("Sending torque: %.2f, %.2f\n", model_output.tm_rl, model_output.tm_rr);
-    _send_torque(model_output.tm_rl, model_output.tm_rr);
+    is_response_timer_elapsed = true;
 }
 
 int main() {
+    LOG_init(LOGLEVEL_DEBUG, false, true, false);
+    CLOG_init();
     UART_init();
     CTRL_change_mode(CTRL_NONE);
 
@@ -59,9 +104,9 @@ int main() {
     timer_info.it_interval.tv_usec = timer_info.it_value.tv_usec = 50000;
     
     if (setitimer(ITIMER_REAL, &timer_info, NULL) == 0)
-        printf("Timer set OK\n");
+        LOG_write(LOGLEVEL_INFO, "Timer set OK");
     else
-        printf("Timer set failed\n");
+        LOG_write(LOGLEVEL_ERR, "Timer set failed");
 
     while (1) {
         CTRL_PayloadTypeDef ctrl_frame;
@@ -73,22 +118,27 @@ int main() {
         if (pkt_len == 0)
             continue;
 
+        CLOG_log_raw_packet(UART_rx_buf, pkt_len);
         CTRL_read_frame(UART_rx_buf, pkt_len, &ctrl_frame);
+        CLOG_log_ctrl_frame(&ctrl_frame);
 
-        // printf("\nRead frame:\n");
-        // printf("     ParamID: 0x%02x\n", ctrl_frame.ParamID);
-        // printf("    ParamVal: %.2f\n", ctrl_frame.ParamVal);
-        // printf("       CRC16: 0x%04x\n", ctrl_frame.CRC);
+        _set_model_param(ctrl_frame.ParamID, ctrl_frame.ParamVal);
 
-        if (ctrl_frame.ParamID != CTRL_PARAMID_DREQ) {
-            printf("Parameter not yet supported\n");
-            continue;
+        if (is_response_timer_elapsed) {
+            _update_models();
+            _send_torque();
+            is_response_timer_elapsed = false;
         }
-
-        _update_model(ctrl_frame.ParamVal);
     }
 }
 
+uint64_t _get_microseconds() {
+    struct timespec t;
+    clock_gettime(CLOCK_REALTIME, &t);
+    return (t.tv_sec*1e6 + t.tv_nsec/1e3);
+}
+
 void _LOG_write_raw(char *txt) {
-    printf(txt);
+    printf("%lu - %s\n", _get_microseconds(), txt);
+    CLOG_log_text((uint8_t*)txt);
 }

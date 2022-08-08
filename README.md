@@ -12,9 +12,9 @@ The setup is divided in three steps:
 
 ##### Install TinyCore Linux
 
-- ...
+- Default user is `tc` and password is `piCore`
 - Set password to `sborato` with `passwd`
-- Since TC runs completely in RAM, changes are made them permanent y editing `/opt/.filetool.lst` (a list of files to backup before shutdown and restore after boot). Make the password change permanent with `sudo echo '/etc/shadow' >> /opt/.filetool.lst`
+- Since TC runs completely in RAM, changes are made permanent by editing `/opt/.filetool.lst` (a list of files to backup before shutdown and restore after boot). Make the password change permanent with `sudo echo '/etc/shadow' >> /opt/.filetool.lst`
 - Trigger the backup with `filetool.sh -b`
 
 ##### Install GCC, Make etc
