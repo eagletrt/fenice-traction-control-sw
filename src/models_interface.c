@@ -117,7 +117,7 @@ bool _load_model_lib() {
         return false;
     }
     
-    LOG_write(LOGLEVEL_ERR, "[CTRL] Successfully loaded dynamic control model: %s", lib_path);
+    LOG_write(LOGLEVEL_INFO, "[CTRL] Successfully loaded dynamic control model: %s", lib_path);
     return true;
 }
 

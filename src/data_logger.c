@@ -27,6 +27,8 @@ void CLOG_init() {
     if (f_txt == NULL)
         LOG_write(LOGLEVEL_ERR, "[DATA] Cannot open messages_log file in append mode");
     fprintf(f_txt, "Started logging at timestamp: %llu\n", get_microseconds());
+
+    CLOG_flush_file_buffers();
 }
 
 /**
