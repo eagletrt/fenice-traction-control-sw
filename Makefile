@@ -1,8 +1,8 @@
 CC = gcc
 CFLAGS_ALL = -g -Wall -Imicro-libs/logger
 CFLAGS_MODELS := -fpic -shared
-CFLAGS_MAIN := -ldl -Imicro-libs/ctrl-nwk-utils
-LDFLAGS = -lm
+CFLAGS_MAIN := -Imicro-libs/ctrl-nwk-utils
+LDFLAGS = -lm -ldl
 BUILD_DIR := ./build
 .PHONY: all clean
 
