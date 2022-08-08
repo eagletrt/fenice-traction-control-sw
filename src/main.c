@@ -139,6 +139,6 @@ uint64_t _get_microseconds() {
 }
 
 void _LOG_write_raw(char *txt) {
-    printf("%lu - %s\n", _get_microseconds(), txt);
+    printf("%llu - %s\n", _get_microseconds(), txt);
     CLOG_log_text((uint8_t*)txt);
 }
