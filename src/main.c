@@ -115,16 +115,16 @@ int main() {
         
         pkt_len = UART_get_packet_sync(UART_rx_buf, UART_MAX_BUF_LEN);
 
-        if (pkt_len == 0)
-            continue;
+        if (pkt_len != 0) {
+            CLOG_log_raw_packet(UART_rx_buf, pkt_len);
+            CTRL_read_frame(UART_rx_buf, pkt_len, &ctrl_frame);
+            CLOG_log_ctrl_frame(&ctrl_frame);
 
-        CLOG_log_raw_packet(UART_rx_buf, pkt_len);
-        CTRL_read_frame(UART_rx_buf, pkt_len, &ctrl_frame);
-        CLOG_log_ctrl_frame(&ctrl_frame);
-
-        _set_model_param(ctrl_frame.ParamID, ctrl_frame.ParamVal);
+            _set_model_param(ctrl_frame.ParamID, ctrl_frame.ParamVal);
+        }
 
         if (is_response_timer_elapsed) {
+            LOG_write(LOGLEVEL_INFO, "Timer elapsed");
             _update_models();
             _send_torque();
             CLOG_flush_file_buffers();
