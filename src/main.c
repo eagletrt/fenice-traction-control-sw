@@ -96,6 +96,7 @@ int main() {
     LOG_init(LOGLEVEL_DEBUG, false, true, false);
     CLOG_init();
     UART_init();
+    VES_init();
     CTRL_change_mode(CTRL_NONE);
 
     signal(SIGALRM, signal_handler);
@@ -124,7 +125,6 @@ int main() {
         }
 
         if (is_response_timer_elapsed) {
-            LOG_write(LOGLEVEL_INFO, "Timer elapsed");
             _update_models();
             _send_torque();
             CLOG_flush_file_buffers();
