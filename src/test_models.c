@@ -37,7 +37,7 @@ void test_velocity_estimation(char* in_fname, char* out_fname) {
     }
 }
 
-void test_ctrl(char* in_fname, char* out_fname, CTRL_MODE ctrl_mode) {
+void test_ctrl(char* in_fname, char* out_fname, CTRL_ModeTypeDef ctrl_mode) {
     FILE *in_f = fopen(in_fname, "r");
     FILE *out_f = fopen(out_fname, "w");
 
@@ -93,14 +93,14 @@ int main() {
     LOG_write(LOGLEVEL_INFO, "[MAIN] Initializing test suite");
 
     test_velocity_estimation("../test_data/vest/vel_input_prova2.csv", "../test_data/vest/vel_test_output2.csv");
-    test_ctrl("../test_data/slip/input.csv", "../test_data/slip/test_output.csv", CTRL_SC);
-    test_ctrl("../test_data/torque/input.csv", "../test_data/torque/test_output.csv", CTRL_TV);
-    test_ctrl("../test_data/all/input.csv", "../test_data/all/test_output.csv", CTRL_ALL);
+    test_ctrl("../test_data/slip/input.csv", "../test_data/slip/test_output.csv", CTRL_Mode_Slip);
+    test_ctrl("../test_data/torque/input.csv", "../test_data/torque/test_output.csv", CTRL_Mode_Torque);
+    test_ctrl("../test_data/all/input.csv", "../test_data/all/test_output.csv", CTRL_Mode_Complete);
 
-    test_ctrl("../test_data/slip_4/control_input_m3c20.csv", "../test_data/slip_4/control_output_m3c20_test.csv", CTRL_SC);
-    test_ctrl("../test_data/slip_4/control_input_m3c21.csv", "../test_data/slip_4/control_output_m3c21_test.csv", CTRL_SC);
-    test_ctrl("../test_data/slip_4/control_input_m3c22.csv", "../test_data/slip_4/control_output_m3c22_test.csv", CTRL_SC);
-    test_ctrl("../test_data/slip_4/control_input_m3c23.csv", "../test_data/slip_4/control_output_m3c23_test.csv", CTRL_SC);
+    test_ctrl("../test_data/slip_4/control_input_m3c20.csv", "../test_data/slip_4/control_output_m3c20_test.csv", CTRL_Mode_Slip);
+    test_ctrl("../test_data/slip_4/control_input_m3c21.csv", "../test_data/slip_4/control_output_m3c21_test.csv", CTRL_Mode_Slip);
+    test_ctrl("../test_data/slip_4/control_input_m3c22.csv", "../test_data/slip_4/control_output_m3c22_test.csv", CTRL_Mode_Slip);
+    test_ctrl("../test_data/slip_4/control_input_m3c23.csv", "../test_data/slip_4/control_output_m3c23_test.csv", CTRL_Mode_Slip);
     return 1;
 }
 

@@ -23,6 +23,11 @@ bool is_response_timer_elapsed = false;
 
 
 void _set_model_param(uint8_t id, float v) {
+    if (id == CTRL_PARAMID_CSW) {
+        CTRL_change_mode((CTRL_ModeTypeDef)v);
+        return;
+    }
+
     switch (id) {
         case CTRL_PARAMID_DREQ:
             model_input.dreq = v;
@@ -97,7 +102,7 @@ int main() {
     CLOG_init();
     UART_init();
     VES_init();
-    CTRL_change_mode(CTRL_NONE);
+    CTRL_change_mode(CTRL_Mode_None);
 
     signal(SIGALRM, signal_handler);
     struct itimerval timer_info;

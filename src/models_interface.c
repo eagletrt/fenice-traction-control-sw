@@ -29,7 +29,7 @@ Matlab_RTM _CTRL_rt_model = { NULL, &_CTRL_DW };
 void (*_CTRL_init_model_fn) (Matlab_RTM *);
 void (*_CTRL_step_model_fn) (Matlab_RTM *);
 void *_CTRL_lib_handle = NULL;
-CTRL_MODE _CTRL_curr_mode = CTRL_NONE;
+CTRL_ModeTypeDef _CTRL_curr_mode = CTRL_Mode_None;
 bool _CTRL_initialization_ok = false;
 
 
@@ -67,7 +67,10 @@ void CTRL_step_model(CTRL_ModelInputTypeDef *data_in, CTRL_ModelOutputTypeDef *d
 /**
  * @brief Change the traction control model being used by loading the appropriate dynamic library
  */
-void CTRL_change_mode(CTRL_MODE new_mode) {
+void CTRL_change_mode(CTRL_ModeTypeDef new_mode) {
+    if (new_mode == _CTRL_curr_mode)
+        return;
+
     _CTRL_initialization_ok = false;
     _CTRL_curr_mode = new_mode;
 
@@ -88,20 +91,20 @@ bool _load_model_lib() {
     char *lib_path;     /* Filesystem path of the DL to load */
 
     switch (_CTRL_curr_mode) {
-        case (CTRL_NONE):
+        case (CTRL_Mode_None):
             lib_path = "./libctrl-no.so";
             break;
-        case (CTRL_SC):
+        case (CTRL_Mode_Slip):
             lib_path = "./libctrl-sc.so";
             break;
-        case (CTRL_TV):
+        case (CTRL_Mode_Torque):
             lib_path = "./libctrl-tv.so";
             break;
-        case (CTRL_ALL):
+        case (CTRL_Mode_Complete):
             lib_path = "./libctrl-all.so";
             break;
         default:
-            LOG_write(LOGLEVEL_ERR, "[CTRL] Error loading dynamic library - unknown CTRL_MODE: %d", _CTRL_curr_mode);
+            LOG_write(LOGLEVEL_ERR, "[CTRL] Error loading dynamic library - unknown CTRL_ModeTypeDef: %d", _CTRL_curr_mode);
             return false;
     }
 
@@ -128,24 +131,24 @@ bool _load_lib_syms() {
     char *i_fn_sym, *s_fn_sym;
 
     switch (_CTRL_curr_mode) {
-        case (CTRL_NONE):
+        case (CTRL_Mode_None):
             i_fn_sym = "No_initialize";
             s_fn_sym = "No_step";
             break;
-        case (CTRL_SC):
+        case (CTRL_Mode_Slip):
             i_fn_sym = "Slip_initialize";
             s_fn_sym = "Slip_step";
             break;
-        case (CTRL_TV):
+        case (CTRL_Mode_Torque):
             i_fn_sym = "Torque_initialize";
             s_fn_sym = "Torque_step";
             break;
-        case (CTRL_ALL):
+        case (CTRL_Mode_Complete):
             i_fn_sym = "All0_initialize";
             s_fn_sym = "All0_step";       
             break;
         default:
-            LOG_write(LOGLEVEL_ERR, "[CTRL] Error loading dynamic library symbols - unknown CTRL_MODE: %d", _CTRL_curr_mode);
+            LOG_write(LOGLEVEL_ERR, "[CTRL] Error loading dynamic library symbols - unknown CTRL_ModeTypeDef: %d", _CTRL_curr_mode);
             return false;
     }
 

@@ -1,13 +1,8 @@
 #ifndef MODELS_INTERFACE_H
 #define MODELS_INTERFACE_H
 
+#include "ctrl-nwk-utils.h"
 
-typedef enum {
-    CTRL_NONE,
-    CTRL_SC,
-    CTRL_TV,
-    CTRL_ALL
-} CTRL_MODE;
 
 typedef struct {
     double dreq;
@@ -29,7 +24,7 @@ typedef struct {
 } CTRL_ModelOutputTypeDef;
 
 
-void CTRL_change_mode(CTRL_MODE);
-void CTRL_step_model(CTRL_ModelInputTypeDef*, CTRL_ModelOutputTypeDef*);
+void CTRL_change_mode(CTRL_ModeTypeDef new_mode);
+void CTRL_step_model(CTRL_ModelInputTypeDef *data_in, CTRL_ModelOutputTypeDef *data_out);
 
 #endif

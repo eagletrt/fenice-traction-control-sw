@@ -1,7 +1,6 @@
 CC = gcc
-CFLAGS_ALL = -g -Wall -Imicro-libs/logger
+CFLAGS_ALL = -g -Wall -Imicro-libs/logger -Imicro-libs/ctrl-nwk-utils
 CFLAGS_MODELS := -fpic -shared
-CFLAGS_MAIN := -Imicro-libs/ctrl-nwk-utils
 LDFLAGS = -lm -ldl
 BUILD_DIR := ./build
 .PHONY: all clean
@@ -74,13 +73,11 @@ micro-libs/%:
 # Build target for the main program
 $(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
 	mkdir -p $(BUILD_DIR)
-	git submodule update --init --recursive micro-libs
-	$(CC) $(CFLAGS_ALL) $(CFLAGS_MAIN) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $^ -o $@ $(LDFLAGS)
 
 # Build target for testing the models
 $(BUILD_DIR)/test-models: $(TEST_SRCS)
 	mkdir -p $(BUILD_DIR)
-	git submodule update --init --recursive micro-libs
 	$(CC) $(CFLAGS_ALL) $^ -o $@ $(LDFLAGS)
 
 # Build all
