@@ -74,9 +74,9 @@ void _update_models() {
     CTRL_step_model(&model_input, &model_output);
 }
 
-void _send_frame(CTRL_PayloadTypeDef frame) {
+void _send_frame(CTRL_PayloadTypeDef *frame) {
     uint8_t buf[UART_MAX_BUF_LEN];
-    uint8_t pkt_len = CTRL_compose_frame(&frame, buf);
+    uint8_t pkt_len = CTRL_compose_frame(frame, buf);
     UART_send_packet_sync(buf, pkt_len);
 }
 
@@ -86,11 +86,13 @@ void _send_torque() {
 
     frame.ParamID = CTRL_PARAMID_TMLL;
     frame.ParamVal = model_output.tm_rl;
-    _send_frame(frame);
+    _send_frame(&frame);
+    CLOG_log_ctrl_frame(&frame);
 
     frame.ParamID = CTRL_PARAMID_TMRR;
     frame.ParamVal = model_output.tm_rr;
-    _send_frame(frame);
+    _send_frame(&frame);
+    CLOG_log_ctrl_frame(&frame);
 }
 
 void signal_handler(int signum) {
