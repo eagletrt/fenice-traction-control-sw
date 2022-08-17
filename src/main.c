@@ -65,8 +65,11 @@ void _set_model_param(uint8_t id, float v) {
 }
 
 void _update_models() {
+    vest_data_in.torque_map = 1.0;
     VES_step_model(&vest_data_in, &vest_data_out);
 
+    model_input.map_sc = 1;
+    model_input.map_tv = 1;
     model_input.bar = vest_data_out.bar;
     model_input.tmax_rl = vest_data_out.tmax_rl;
     model_input.tmax_rr = vest_data_out.tmax_rr;

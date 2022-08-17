@@ -3,9 +3,9 @@ This software runs on the Raspberry Pi that communicates with the DAS via UART t
 
 The setup is divided in three steps:
 
-- RPi setup
-- Software compilation
-- Software execution
+- [RPi setup](#rpi-setup)
+- [Software compilation](#compiling)
+- [Software execution](#execution)
 
 
 ### RPi Setup
@@ -47,7 +47,7 @@ To compile this software you need to clone the repo and run the `all` Makefile r
     - The four dynamic libs for the models: `libctrl-{no,sc,tc,all}.so`
     - A binary that loads the models and tests them with the CSVs from the `test-data` folder: `test-models`
 
-### Exeution
+### Execution
 To execute the binary, `cd` into the build folder and run `./fenice-traction-control`. Note that you need to call the binary from within its folder otherwise it won't find the dynamic libraries.
 
 At the end, if you need to analyze or gather control data, use `scp` to copy back the log files it produced (`build/*.csv`) otherwise at shoutdown they will be lost.
