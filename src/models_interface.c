@@ -68,7 +68,7 @@ void CTRL_step_model(CTRL_ModelInputTypeDef *data_in, CTRL_ModelOutputTypeDef *d
  * @brief Change the traction control model being used by loading the appropriate dynamic library
  */
 void CTRL_change_mode(CTRL_ModeTypeDef new_mode) {
-    if (new_mode == _CTRL_curr_mode)
+    if (new_mode == _CTRL_curr_mode && _CTRL_initialization_ok)
         return;
 
     _CTRL_initialization_ok = false;
