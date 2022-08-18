@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "logger.h": "c",
-        "ctrl-nwk-utils.h": "c"
-    }
-}

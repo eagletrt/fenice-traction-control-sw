@@ -40,12 +40,12 @@ void CLOG_log_raw_packet(uint8_t *buf, uint8_t buf_len) {
     fprintf(f_raw_data, "\n%llu", get_microseconds());
 
     for (uint8_t i = 0; i < buf_len; i++)
-        fprintf(f_raw_data, ",%03d", buf[buf_len]);
+        fprintf(f_raw_data, ",%03d", buf[i]);
 }
 
 void CLOG_log_ctrl_frame(CTRL_PayloadTypeDef *frame) {
     fprintf(
-        f_frames, "\n%llu,%d,%4.1f,%d",
+        f_frames, "\n%llu,%d,%.3f,%d",
         get_microseconds(), frame->ParamID, frame->ParamVal, frame->CRC16
     );
 }

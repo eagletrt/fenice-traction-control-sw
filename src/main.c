@@ -22,41 +22,41 @@ const uint8_t UART_MAX_BUF_LEN = 30;
 bool is_response_timer_elapsed = false;
 
 
-void _set_model_param(uint8_t id, float v) {
+void _set_model_param(uint8_t id, float val) {
     if (id == CTRL_PARAMID_CSW) {
-        CTRL_change_mode((CTRL_ModeTypeDef)v);
+        CTRL_change_mode((CTRL_ModeTypeDef)val);
         return;
     }
 
     switch (id) {
         case CTRL_PARAMID_DREQ:
-            model_input.dreq = v;
+            model_input.dreq = val;
             break;
         case CTRL_PARAMID_STEER_ANG:
-            model_input.delta = v;
+            model_input.delta = val;
             break;
         case CTRL_PARAMID_YAW:
-            model_input.omega = v;
+            model_input.omega = val;
             break;
         case CTRL_PARAMID_O_RR:
-            vest_data_in.omega_rr = v;
-            model_input.omega_rr = v;
+            vest_data_in.omega_rr = val;
+            model_input.omega_rr = val;
             break;
         case CTRL_PARAMID_O_RL:
-            vest_data_in.omega_rl = v;
-            model_input.omega_rl = v;
+            vest_data_in.omega_rl = val;
+            model_input.omega_rl = val;
             break;
         case CTRL_PARAMID_O_FR:
-            vest_data_in.omega_fr = v;
+            vest_data_in.omega_fr = val;
             break;
         case CTRL_PARAMID_O_FL:
-            vest_data_in.omega_fl = v;
+            vest_data_in.omega_fl = val;
             break;
         case CTRL_PARAMID_AX_G:
-            vest_data_in.ax_g = v;
+            vest_data_in.ax_g = val;
             break;
         case CTRL_PARAMID_BRAKE:
-            model_input.brake = v;
+            model_input.brake = val;
             break;
         default:
             LOG_write(LOGLEVEL_WARN, "Unknown param id: %d", id);
