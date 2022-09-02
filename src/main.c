@@ -65,11 +65,11 @@ void _set_model_param(uint8_t id, float val) {
 }
 
 void _update_models() {
-    vest_data_in.torque_map = 1.0;
+    vest_data_in.torque_map = 6.0f;
     VES_step_model(&vest_data_in, &vest_data_out);
 
-    model_input.map_sc = 1;
-    model_input.map_tv = 1;
+    model_input.map_sc = 1.0f;
+    model_input.map_tv = 1.0f;
     model_input.bar = vest_data_out.bar;
     model_input.tmax_rl = vest_data_out.tmax_rl;
     model_input.tmax_rr = vest_data_out.tmax_rr;
@@ -80,6 +80,7 @@ void _update_models() {
 void _send_frame(CTRL_PayloadTypeDef *frame) {
     uint8_t buf[UART_MAX_BUF_LEN];
     uint8_t pkt_len = CTRL_compose_frame(frame, buf);
+    CLOG_log_raw_packet(buf, pkt_len);
     UART_send_packet_sync(buf, pkt_len);
 }
 
