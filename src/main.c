@@ -81,7 +81,7 @@ void _send_frame(CTRL_PayloadTypeDef *frame) {
     uint8_t buf[UART_MAX_BUF_LEN];
     uint8_t pkt_len = CTRL_compose_frame(frame, buf);
     CLOG_log_raw_packet(buf, pkt_len);
-    CLOG_log_ctrl_frame(&frame);
+    CLOG_log_ctrl_frame(frame);
     UART_send_packet_sync(buf, pkt_len);
 }
 
