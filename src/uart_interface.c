@@ -38,8 +38,8 @@ bool UART_init() {
     // One input byte is enough to return from read()
     options.c_cc[VMIN]  = 1;
     options.c_cc[VTIME] = 0;
-	cfsetispeed(&options, B230400);
-	cfsetospeed(&options, B230400);
+	cfsetispeed(&options, B115200);
+	cfsetospeed(&options, B115200);
 	tcsetattr(UART_fd, TCSANOW, &options);
 
     return true;
