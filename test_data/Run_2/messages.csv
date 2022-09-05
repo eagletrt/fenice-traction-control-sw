@@ -1,0 +1,14 @@
+Started logging at timestamp: 1662293088718013
+Started logging at timestamp: 1662293496340781
+1662293496342109 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-no.so
+1662293496342236 - [INF] Timer set OK
+1662293534764319 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-sc.so
+1662293539402119 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-no.so
+1662293540420853 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-sc.so
+1662293648133990 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-no.so
+1662293651899360 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-sc.so
+1662293695100727 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-tv.so
+1662293733799900 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-sc.so
+1662293747095564 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-tv.so
+1662293862363265 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-sc.so
+1662293863314014 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-no.so
