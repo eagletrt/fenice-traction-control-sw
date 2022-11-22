@@ -7,11 +7,14 @@
 
 
 void test_velocity_estimation(char* in_fname, char* out_fname) {
+    LOG_write(LOGLEVEL_INFO, "[VEST] Reading input data from: %s", in_fname);
+    LOG_write(LOGLEVEL_INFO, "[VEST] Writing output data to: %s", out_fname);
+
     FILE *in_f = fopen(in_fname, "r");
     FILE *out_f = fopen(out_fname, "w");
 
     if (!in_f || !out_f) {
-        printf("[vest] Error opening a file\n");
+        printf("[VEST] Error opening a file\n");
         return;
     }
 

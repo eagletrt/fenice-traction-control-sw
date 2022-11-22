@@ -99,18 +99,18 @@ if __name__ == '__main__':
     
     data_in_fn = sys.argv[1]
     exp_out_fn = sys.argv[2]
-    tmp_out_data = "test-models-tmp-data.csv"
+    tmp_out_data = "/tmp/test-models-tmp-data.csv"
 
     maneuver, test_type, _ = data_in_fn.split('/')[-1].split('_')
     maneuver_id = int(maneuver[-1])
     maneuver_str = ['slip', 'torque', 'all', 'none'][maneuver_id-1] if test_type == 'control' else 'vest'
 
-    cmd_str = "./test-models %s %s %s" % (maneuver_str, '../' + data_in_fn, '../' + tmp_out_data)
+    cmd_str = "./test-models %s %s %s" % (maneuver_str, '../' + data_in_fn, tmp_out_data)
     subprocess.Popen(cmd_str.split(' '), cwd='build')
     
     if test_type == 'vel':
         exp, act = read_vest_files(exp_out_fn, tmp_out_data)
-        plot_vest(exp, act, "Velocity Estimation")
+        plot_vest(exp, act)
     else:
         exp, act = read_ctrl_files(exp_out_fn, tmp_out_data)
         plot_ctrl(exp, act, maneuver)
