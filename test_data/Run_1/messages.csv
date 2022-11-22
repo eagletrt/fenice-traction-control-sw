@@ -1,6 +1,0 @@
-Started logging at timestamp: 1662291145320960
-1662291145322376 - [INF] [CTRL] Successfully loaded dynamic control model: ./libctrl-no.so
-1662291145322500 - [INF] Timer set OK
-1662291171654189 - [WRN] Unknown param id: 2
-1662291331891090 - [WRN] Unknown param id: 2
-1662291340492086 - [WRN] Unknown param id: 2
