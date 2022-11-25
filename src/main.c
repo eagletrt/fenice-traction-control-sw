@@ -67,7 +67,7 @@ void _update_models() {
     vest_data_in.torque_map = 6.0f;
     VES_step_model(&vest_data_in, &vest_data_out);
 
-    model_input.map_sc = 1.0f;
+    model_input.map_sc = 0.3f;
     model_input.map_tv = 1.0f;
     model_input.bar = vest_data_out.bar;
     model_input.tmax_rl = vest_data_out.tmax_rl;
@@ -131,6 +131,7 @@ int main() {
     }
 
     LOG_write(LOGLEVEL_INFO, "[MAIN] Program is ready! Beginning main loop.");
+    fflush(stdout);
 
     while (1) {
         CTRL_PayloadTypeDef ctrl_frame;

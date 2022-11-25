@@ -8,7 +8,6 @@ FILE *f_raw_data, *f_frames, *f_txt;
 
 
 uint64_t CLOG_get_microseconds() {
-    return 0U;
     struct timespec t;
     clock_gettime(CLOCK_REALTIME, &t);
     return (t.tv_sec*1e6 + (t.tv_nsec/1000.0f));
@@ -38,6 +37,9 @@ void CLOG_init() {
  *            if a read is interrupted at shutdown
  */
 void CLOG_log_raw_packet(uint8_t *buf, uint8_t buf_len) {
+    if (f_raw_data == NULL)
+        return;
+    
     fprintf(f_raw_data, "\n%llu", CLOG_get_microseconds());
 
     for (uint8_t i = 0; i < buf_len; i++)
@@ -45,6 +47,9 @@ void CLOG_log_raw_packet(uint8_t *buf, uint8_t buf_len) {
 }
 
 void CLOG_log_ctrl_frame(CTRL_PayloadTypeDef *frame) {
+    if (f_frames == NULL)
+        return;
+
     fprintf(
         f_frames, "\n%llu,%d,%.3f,%d",
         CLOG_get_microseconds(), frame->ParamID, frame->ParamVal, frame->CRC16
@@ -52,6 +57,9 @@ void CLOG_log_ctrl_frame(CTRL_PayloadTypeDef *frame) {
 }
 
 void CLOG_log_text(uint8_t *txt) {
+    if (f_txt == NULL)
+        return;
+    
     fprintf(f_txt, "%llu - %s\n", CLOG_get_microseconds(), txt);
 }
 
