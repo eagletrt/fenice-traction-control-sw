@@ -13,6 +13,7 @@
 int UART_fd = -1;
 char *uart_dev = "/dev/ttyAMA0";
 // char *uart_dev = "/dev/ttyUSB0";
+// char *uart_dev = "/dev/random";
 
 
 /**

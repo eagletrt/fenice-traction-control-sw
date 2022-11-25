@@ -1,6 +1,8 @@
 #ifndef CTRL_LOGGER_H
 #define CTRL_LOGGER_H
 
+#include "stdint.h"
+
 #include "ctrl-nwk-utils.h"
 
 
@@ -9,5 +11,6 @@ void CLOG_log_raw_packet(uint8_t *buf, uint8_t buf_len);
 void CLOG_log_ctrl_frame(CTRL_PayloadTypeDef *frame);
 void CLOG_log_text(uint8_t *txt);
 void CLOG_flush_file_buffers();
+uint64_t CLOG_get_microseconds();
 
 #endif

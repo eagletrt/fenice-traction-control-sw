@@ -16,9 +16,8 @@ VES_DataInTypeDef vest_data_in = { 0U };
 VES_DataOutTypeDef vest_data_out = { 0U };
 CTRL_ModelInputTypeDef model_input = { 0U };
 CTRL_ModelOutputTypeDef model_output = { 0U };
-uint64_t get_microseconds();
 
-const uint8_t UART_MAX_BUF_LEN = 30;
+const uint8_t UART_MAX_BUF_LEN = 127;
 bool is_response_timer_elapsed = false;
 
 
@@ -59,7 +58,7 @@ void _set_model_param(uint8_t id, float val) {
             model_input.brake = val;
             break;
         default:
-            LOG_write(LOGLEVEL_WARN, "Unknown param id: %d", id);
+            LOG_write(LOGLEVEL_WARN, "[MAIN] Unknown param id: %d", id);
             break;
     }
 }
@@ -104,20 +103,34 @@ void signal_handler(int signum) {
 
 int main() {
     LOG_init(LOGLEVEL_DEBUG, false, true, false);
+    LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized textual logger");
+
     CLOG_init();
+    LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized raw-data logger");
+
     UART_init();
+    LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized UART interface");
+    
     VES_init();
+    LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized Velocity-Estimation interface");
+    
     CTRL_change_mode(CTRL_Mode_None);
+    LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized Traction-Control interface");
 
     signal(SIGALRM, signal_handler);
+    LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized signal handler");
+
     struct itimerval timer_info;
     timer_info.it_interval.tv_sec = timer_info.it_value.tv_sec = 0;
     timer_info.it_interval.tv_usec = timer_info.it_value.tv_usec = 50000;
     
-    if (setitimer(ITIMER_REAL, &timer_info, NULL) == 0)
-        LOG_write(LOGLEVEL_INFO, "Timer set OK");
-    else
-        LOG_write(LOGLEVEL_ERR, "Timer set failed");
+    if (setitimer(ITIMER_REAL, &timer_info, NULL) == 0) {
+        LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized SIGALRM timer");
+    } else {
+        LOG_write(LOGLEVEL_ERR, "[MAIN] Timer set failed");
+    }
+
+    LOG_write(LOGLEVEL_INFO, "[MAIN] Program is ready! Beginning main loop.");
 
     while (1) {
         CTRL_PayloadTypeDef ctrl_frame;
@@ -143,13 +156,7 @@ int main() {
     }
 }
 
-uint64_t _get_microseconds() {
-    struct timespec t;
-    clock_gettime(CLOCK_REALTIME, &t);
-    return (t.tv_sec*1e6 + t.tv_nsec/1e3);
-}
-
 void _LOG_write_raw(char *txt) {
-    printf("%llu - %s\n", _get_microseconds(), txt);
+    printf("%llu - %s\n", CLOG_get_microseconds(), txt);
     CLOG_log_text((uint8_t*)txt);
 }

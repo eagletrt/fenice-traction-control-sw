@@ -7,10 +7,11 @@
 FILE *f_raw_data, *f_frames, *f_txt;
 
 
-uint64_t get_microseconds() {
+uint64_t CLOG_get_microseconds() {
+    return 0U;
     struct timespec t;
     clock_gettime(CLOCK_REALTIME, &t);
-    return (t.tv_sec*1e6 + t.tv_nsec/1e3);
+    return (t.tv_sec*1e6 + (t.tv_nsec/1000.0f));
 }
 
 void CLOG_init() {
@@ -26,7 +27,7 @@ void CLOG_init() {
     f_txt = fopen("messages.csv", "a");
     if (f_txt == NULL)
         LOG_write(LOGLEVEL_ERR, "[DATA] Cannot open messages_log file in append mode");
-    fprintf(f_txt, "Started logging at timestamp: %llu\n", get_microseconds());
+    fprintf(f_txt, "Started logging at timestamp: %llu\n", CLOG_get_microseconds());
 
     CLOG_flush_file_buffers();
 }
@@ -37,7 +38,7 @@ void CLOG_init() {
  *            if a read is interrupted at shutdown
  */
 void CLOG_log_raw_packet(uint8_t *buf, uint8_t buf_len) {
-    fprintf(f_raw_data, "\n%llu", get_microseconds());
+    fprintf(f_raw_data, "\n%llu", CLOG_get_microseconds());
 
     for (uint8_t i = 0; i < buf_len; i++)
         fprintf(f_raw_data, ",%03d", buf[i]);
@@ -46,12 +47,12 @@ void CLOG_log_raw_packet(uint8_t *buf, uint8_t buf_len) {
 void CLOG_log_ctrl_frame(CTRL_PayloadTypeDef *frame) {
     fprintf(
         f_frames, "\n%llu,%d,%.3f,%d",
-        get_microseconds(), frame->ParamID, frame->ParamVal, frame->CRC16
+        CLOG_get_microseconds(), frame->ParamID, frame->ParamVal, frame->CRC16
     );
 }
 
 void CLOG_log_text(uint8_t *txt) {
-    fprintf(f_txt, "%llu - %s\n", get_microseconds(), txt);
+    fprintf(f_txt, "%llu - %s\n", CLOG_get_microseconds(), txt);
 }
 
 void CLOG_flush_file_buffers() {

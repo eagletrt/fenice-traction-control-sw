@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS_ALL = -g -Wall -Imicro-libs/logger -Imicro-libs/ctrl-nwk-utils
+CFLAGS_ALL = -g -Wall -Imicro-libs/logger -Imicro-libs/ctrl-nwk-utils -Og
 CFLAGS_MODELS := -fpic -shared
 LDFLAGS = -lm -ldl
 BUILD_DIR := ./build
