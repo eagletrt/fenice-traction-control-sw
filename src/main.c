@@ -122,7 +122,7 @@ int main() {
 
     struct itimerval timer_info;
     timer_info.it_interval.tv_sec = timer_info.it_value.tv_sec = 0;
-    timer_info.it_interval.tv_usec = timer_info.it_value.tv_usec = 50000;
+    timer_info.it_interval.tv_usec = timer_info.it_value.tv_usec = 5000;
     
     if (setitimer(ITIMER_REAL, &timer_info, NULL) == 0) {
         LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized SIGALRM timer");
