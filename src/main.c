@@ -22,11 +22,6 @@ bool is_response_timer_elapsed = false;
 
 
 void _set_model_param(uint8_t id, float val) {
-    if (id == CTRL_PARAMID_CSW) {
-        CTRL_change_mode((CTRL_ModeTypeDef)val);
-        return;
-    }
-
     switch (id) {
         case CTRL_PARAMID_DREQ:
             model_input.dreq = val;
@@ -57,6 +52,15 @@ void _set_model_param(uint8_t id, float val) {
         case CTRL_PARAMID_BRAKE:
             model_input.brake = val;
             break;
+        case CTRL_PARAMID_PW_MAP:
+            vest_data_in.torque_map = val;
+            break;
+        case CTRL_PARAMID_SC_MAP:
+            model_input.map_sc = val;
+            break;
+        case CTRL_PARAMID_TV_MAP:
+            model_input.map_tv = val;
+            break;
         default:
             LOG_write(LOGLEVEL_WARN, "[MAIN] Unknown param id: %d", id);
             break;
@@ -64,11 +68,8 @@ void _set_model_param(uint8_t id, float val) {
 }
 
 void _update_models() {
-    vest_data_in.torque_map = 6.0f;
     VES_step_model(&vest_data_in, &vest_data_out);
 
-    model_input.map_sc = 0.3f;
-    model_input.map_tv = 1.0f;
     model_input.bar = vest_data_out.bar;
     model_input.tmax_rl = vest_data_out.tmax_rl;
     model_input.tmax_rr = vest_data_out.tmax_rr;
@@ -84,15 +85,32 @@ void _send_frame(CTRL_PayloadTypeDef *frame) {
     UART_send_packet_sync(buf, pkt_len);
 }
 
+void _send_vest_out() {
+    CTRL_PayloadTypeDef frame;
+    frame.CRC16 = 0x0;
+
+    frame.ParamID = CTRL_PARAMID_TLMAX;
+    frame.ParamVal = vest_data_out.tmax_rl;
+    _send_frame(&frame);
+
+    frame.ParamID = CTRL_PARAMID_TRMAX;
+    frame.ParamVal = vest_data_out.tmax_rr;
+    _send_frame(&frame);
+
+    frame.ParamID = CTRL_PARAMID_UBAR;
+    frame.ParamVal = vest_data_out.bar;
+    _send_frame(&frame);
+}
+
 void _send_torque() {
     CTRL_PayloadTypeDef frame;
     frame.CRC16 = 0x0;
 
-    frame.ParamID = CTRL_PARAMID_TMLL;
+    frame.ParamID = CTRL_PARAMID_TLEFT;
     frame.ParamVal = model_output.tm_rl;
     _send_frame(&frame);
 
-    frame.ParamID = CTRL_PARAMID_TMRR;
+    frame.ParamID = CTRL_PARAMID_TRIGHT;
     frame.ParamVal = model_output.tm_rr;
     _send_frame(&frame);
 }
@@ -150,6 +168,7 @@ int main() {
 
         if (is_response_timer_elapsed) {
             _update_models();
+            _send_vest_out();
             _send_torque();
             CLOG_flush_file_buffers();
             is_response_timer_elapsed = false;
