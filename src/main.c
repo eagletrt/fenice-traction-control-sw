@@ -132,7 +132,7 @@ int main() {
     VES_init();
     LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized Velocity-Estimation interface");
     
-    CTRL_change_mode(CTRL_Mode_All);
+    CTRL_change_mode(CTRL_Mode_Complete);
     LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized Traction-Control interface");
 
     signal(SIGALRM, signal_handler);
