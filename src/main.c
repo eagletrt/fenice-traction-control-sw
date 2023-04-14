@@ -10,6 +10,21 @@
 #include "velocity_estimation.h"
 #include "logger.h"
 #include "data_logger.h"
+#include <pthread.h>
+#include "queue.h"
+#include "can.h"
+#include "invlib/inverter.h"
+
+#include "can/lib/primary/c/ids.h"
+#include "can/lib/secondary/c/ids.h"
+
+#define primary_NETWORK_IMPLEMENTATION
+#define secondary_NETWORK_IMPLEMENTATION
+#include "can/lib/primary/c/network.h"
+#include "can/lib/secondary/c/network.h"
+
+const int NETWORK_PRIMARY = 0;
+const int NETWORK_SECONDARY = 1;
 
 
 VES_DataInTypeDef vest_data_in = { 0U };
@@ -20,45 +35,48 @@ CTRL_ModelOutputTypeDef model_output = { 0U };
 const uint8_t UART_MAX_BUF_LEN = 127;
 bool is_response_timer_elapsed = false;
 
+queue_t queue;
+queue_init(&queue);
+pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
 void _set_model_param(uint8_t id, float val) {
     switch (id) {
         case CTRL_PARAMID_DREQ:
             model_input.dreq = val;
             break;
-        case CTRL_PARAMID_STEER_ANG:
+        case CTRL_PARAMID_STEER_ANG: 
             model_input.delta = val;
             break;
         case CTRL_PARAMID_YAW:
             model_input.omega = val;
             break;
-        case CTRL_PARAMID_O_RR:
+        case CTRL_PARAMID_O_RR:  
             vest_data_in.omega_rr = val;
             model_input.omega_rr = val;
             break;
-        case CTRL_PARAMID_O_RL:
+        case CTRL_PARAMID_O_RL: 
             vest_data_in.omega_rl = val;
             model_input.omega_rl = val;
             break;
-        case CTRL_PARAMID_O_FR:
+        case CTRL_PARAMID_O_FR: 
             vest_data_in.omega_fr = val;
             break;
-        case CTRL_PARAMID_O_FL:
+        case CTRL_PARAMID_O_FL: 
             vest_data_in.omega_fl = val;
             break;
-        case CTRL_PARAMID_AX_G:
+        case CTRL_PARAMID_AX_G: 
             vest_data_in.ax_g = val;
             break;
         case CTRL_PARAMID_BRAKE:
             model_input.brake = val;
             break;
-        case CTRL_PARAMID_PW_MAP:
+        case CTRL_PARAMID_PW_MAP:   
             vest_data_in.torque_map = val;
             break;
-        case CTRL_PARAMID_SC_MAP:
+        case CTRL_PARAMID_SC_MAP: 
             model_input.map_sc = val;
             break;
-        case CTRL_PARAMID_TV_MAP:
+        case CTRL_PARAMID_TV_MAP:  
             model_input.map_tv = val;
             break;
         default:
@@ -119,6 +137,19 @@ void signal_handler(int signum) {
     is_response_timer_elapsed = true;
 }
 
+void canread(int can_network, can_t* can){
+    queue_element_t msg;
+    while(1){
+        can_receive(&msg.frame, can);
+        msg.can_network = can_network;
+        msg.timestamp = CLOG_get_microseconds();
+
+        pthread_mutex_lock(&mtx);
+        enqueue(msg, &queue);
+        pthread_mutex_unlock(&mtx);
+    }
+}
+
 int main() {
     LOG_init(LOGLEVEL_DEBUG, false, true, false);
     LOG_write(LOGLEVEL_INFO, "[MAIN] Initialized textual logger");
@@ -151,25 +182,162 @@ int main() {
     LOG_write(LOGLEVEL_INFO, "[MAIN] Program is ready! Beginning main loop.");
     fflush(stdout);
 
+    can_t* can_primary = can_init("can1");
+    can_t* can_secondary = can_init("can0");
+
+    pthread_t _thread_id_0;
+    pthread_t _thread_id_1;
+    pthread_create (&_thread_id_1, NULL, canread, NETWORK_PRIMARY, &can_primary);
+    pthread_create (&_thread_id_1, NULL, canread, NETWORK_SECONDARY, &can_secondary);
+
+
     while (1) {
         CTRL_PayloadTypeDef ctrl_frame;
         uint8_t UART_rx_buf[UART_MAX_BUF_LEN];
         uint8_t pkt_len;
+        queue_element_t q_element;
+
+        pthread_mutex_lock(&mtx);
+        queue_first(&queue, &q_element); 
+        dequeue(&queue);
+        pthread_mutex_unlock(&mtx);
+
+        if (q_element.can_network == 0){ // PRIMARY
+
+            switch(q_element.frame.can_id){
+
+                case primary_ID_INV_L_RESPONSE:{
+                    primary_message_INV_L_RESPONSE canlib_response;
+                    primary_deserialize_INV_L_RESPONSE(&canlib_response, &q_element.frame.data);
+                    inverter_message_INV_RESPONSE inv_response = *(inverter_message_INV_RESPONSE*)(&canlib_response);
+                    static inverter_data_t inverters_data[2];
+
+                    if(q_element.frame.data[0] == INV_REG_SPEED){
+                        parse_inverter(&inv_response, INV_IDX_LEFT, inverters_data);
+                        vest_data_in.omega_rl = inverters_data[0].inverter_speed*4.5f;
+                        model_input.omega_rl = inverters_data[0].inverter_speed*4.5f;
+                    }
+                    }
+                    break;
+
+                case primary_ID_INV_R_RESPONSE:{
+
+                    primary_message_INV_R_RESPONSE canlib_response;
+                    primary_deserialize_INV_R_RESPONSE(&canlib_response, &q_element.frame.data);
+                    inverter_message_INV_RESPONSE inv_response = *(inverter_message_INV_RESPONSE*)(&canlib_response);
+                    static inverter_data_t inverters_data[2];
+
+                    if(q_element.frame.data[0] == INV_REG_SPEED){
+                        parse_inverter(&inv_response, INV_IDX_RIGHT, inverters_data);
+                        vest_data_in.omega_rr = inverters_data[1].inverter_speed*4.5f;
+                        model_input.omega_rr = inverters_data[1].inverter_speed*4.5f;
+                    }
+                    }
+                    break;
+
+                case primary_ID_SPEED:{
+                
+                    primary_message_SPEED message;
+                    primary_message_SPEED_conversion conversion; 
+                    // deserialize
+                    primary_deserialize_SPEED(&message, &q_element.frame.data);
+                    // raw to conversion
+                    primary_raw_to_conversion_SPEED(&conversion, 
+                        data.encoder_r, data.encoder_l, 
+                        data.inverter_r, data.inverter_l);
+
+                    vest_data_in.omega_fr = conversion.encoder_r;
+                    vest_data_in.omega_fl = conversion.encoder_l;
+                    }
+                    break;
+
+                case primary_ID_STEER_STATUS:{
+
+                    primary_message_STEER_STATUS message;
+                    primary_message_STEER_STATUS_conversion conversion;
+                    // deserialize
+                    primary_deserialize_STEER_STATUS(&message, &q_element.frame.data);
+                    // raw to conversion
+                    primary_raw_to_conversion_struct_STEER_STATUS(&conversion ,&message);
+
+                    vest_data_in.torque_map = conversion.map_pw;
+                    model_input.map_sc = conversion.map_sc;
+                    model_input.map_tv = conversion.map_tv;
+                    }
+                    break;
+
+                default:
+                    continue;
+            }
+        } else if (q_element.can_network == 1){ // SECONDARY
+
+            switch(q_element.frame.can_id){
+                case secondary_ID_STEERING_ANGLE:{
+
+                    secondary_message_STEERING_ANGLE message;
+                    // deserialize
+                    secondary_deserialize_STEERING_ANGLE(&message, &q_element.frame.data);
+
+                    model_input.delta = message.angle;
+                    }
+                    break;
+
+                case secondary_ID_PEDALS_OUTPUT:{
+
+                    secondary_message_PEDALS_OUTPUT message;
+                    secondary_message_PEDALS_OUTPUT_conversion conversion;
+                    // deserialize
+                    secondary_deserialize_PEDALS_OUTPUT(&message, &q_element.frame.data)
+                    // raw to conversion
+                    secondary_raw_to_conversion_struct_PEDALS_OUTPUT(&conversion, &message);
+
+                    model_input.brake = conversion.bse_front/100.0f;
+                    }
+                    break;
+                case secondary_ID_IMU_ANGULAR_RATE:{
+                    
+                    secondary_message_IMU_ANGULAR_RATE message;
+                    secondary_message_IMU_ANGULAR_RATE_conversion conversion;
+                    // deserialize
+                    secondary_deserialize_IMU_ANGULAR_RATE(&message, &q_element.frame.data);
+                    // raw to conversion
+                    secondary_raw_to_conversion_struct_IMU_ANGULAR_RATE(&conversion, &message);
+
+                    model_input.omega = conversion.ang_rate_z * 0.017453f;
+                    model_input.dreq = conversion.apps/100.0f;
+                    }
+                    break;
+                case secondary_ID_IMU_ACCELERATION:{
+
+                    secondary_message_IMU_ACCELERATION message;
+                    secondary_message_IMU_ACCELERATION_conversion conversion;
+                    // deserialize
+                    secondary_deserialize_IMU_ACCELERATION(&message, &q_element.frame.data);
+                    // raw to conversion
+                    secondary_raw_to_conversion_struct_IMU_ACCELERATION(&conversion, &message);
+
+                    vest_data_in.ax_g = conversion.accel_x * 9.81f;
+                    }
+                    break;
+                default:
+                    continue;
+            }
+        }
         
+        
+
         pkt_len = UART_get_packet_sync(UART_rx_buf, UART_MAX_BUF_LEN);
 
         if (pkt_len != 0) {
-            CLOG_log_raw_packet(UART_rx_buf, pkt_len);
+            CLOG_log_raw_packet(UART_rx_buf, pkt_len); // spostare in canread: da riadattare
             CTRL_read_frame(UART_rx_buf, pkt_len, &ctrl_frame);
             CLOG_log_ctrl_frame(&ctrl_frame);
-
-            _set_model_param(ctrl_frame.ParamID, ctrl_frame.ParamVal);
         }
 
         if (is_response_timer_elapsed) {
             _update_models();
-            _send_vest_out();
-            _send_torque();
+            _send_vest_out(); // NOTE: inviare questi messaggi in CAN
+            _send_torque(); // NOTE: inviare questi messaggi in CAN
             CLOG_flush_file_buffers();
             is_response_timer_elapsed = false;
         }

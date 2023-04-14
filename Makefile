@@ -1,17 +1,19 @@
 CC = gcc
-CFLAGS_ALL = -g -Wall -Imicro-libs/logger -Imicro-libs/ctrl-nwk-utils -Og
+CFLAGS_ALL = -g -Wall -Imicro-libs/logger -Imicro-libs/ctrl-nwk-utils -I. -Og
 CFLAGS_MODELS := -fpic -shared
 LDFLAGS = -lm -ldl
 BUILD_DIR := ./build
 .PHONY: all clean
 
 # --------------------------------- Variables ----------------------------------
+# Get the directory of the Makefile
+THIS_DIR := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 
 # Target executables (main program and model servers)
 ALL_TARGETS := fenice-traction-control test-models libctrl-ve.so libctrl-sc.so libctrl-tv.so libctrl-all.so libctrl-no.so
 
 # Matlab models base directory
-MATLAB_ROOT := ./fenice-vehicle-model/C_code
+MATLAB_ROOT := $(THIS_DIR)fenice-vehicle-model/C_code
 
 # Velocity Estimation model source
 MODEL_VE_DIR   := $(MATLAB_ROOT)/Velocity_Estimation_ert_rtw
@@ -33,10 +35,13 @@ MODEL_ALL_SRCS := $(addprefix $(MODEL_ALL_DIR)/, All0.c All0_data.c)
 MODEL_NO_DIR   := $(MATLAB_ROOT)/No_ert_rtw
 MODEL_NO_SRCS  := $(addprefix $(MODEL_NO_DIR)/, No.c)
 
+# Invlib
+INVLIB_DIR := $(THIS_DIR)invlib
+
 # Main program source files
-MAIN_SRC_DIR := ./src
-MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c data_logger.c)
-MAIN_SRCS := $(MAIN_SRCS) micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c micro-libs/logger/logger.c
+MAIN_SRC_DIR := $(THIS_DIR)src
+MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interface.c velocity_estimation.c data_logger.c queue.c can.c)
+MAIN_SRCS := $(MAIN_SRCS) micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c micro-libs/logger/logger.c invlib/inverter.c
 TEST_SRCS := $(addprefix $(MAIN_SRC_DIR)/, test_models.c models_interface.c velocity_estimation.c)
 TEST_SRCS := $(TEST_SRCS) micro-libs/logger/logger.c
 
@@ -73,7 +78,7 @@ micro-libs/%:
 # Build target for the main program
 $(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
 	mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS_ALL) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS_ALL) $^ -o $@ $(LDFLAGS) -I$(INVLIB_DIR)
 
 # Build target for testing the models
 $(BUILD_DIR)/test-models: $(TEST_SRCS)
@@ -86,3 +91,5 @@ all: $(addprefix $(BUILD_DIR)/,$(ALL_TARGETS))
 # Clean build directory
 clean:
 	rm -r $(BUILD_DIR)
+transfer:
+	rsync -zrh --delete --verbose --progress $(THIS_DIR) control@100.121.53.94:/home/control/fenice-traction-control-sw 

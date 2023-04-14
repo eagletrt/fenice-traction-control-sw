@@ -4,3 +4,10 @@
 [submodule "fenice-vehicle-model"]
 	path = fenice-vehicle-model
 	url = git@github.com:eagletrt/fenice-vehicle-model-2022.git
+[submodule "can"]
+	path = can
+	url = https://github.com/eagletrt/can.git
+	branch = build
+[submodule "invlib"]
+	path = invlib
+	url = https://github.com/eagletrt/invlib.git

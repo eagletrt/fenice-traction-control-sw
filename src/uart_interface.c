@@ -9,6 +9,7 @@
 #include "ctrl-nwk-utils.h"
 #include "logger.h"
 
+// #define B1000000 1000000 // NOTE: andrà tolto quando si passerà a linux
 
 int UART_fd = -1;
 char *uart_dev = "/dev/ttyAMA0";
