@@ -1,0 +1,12 @@
+[
+    {
+        "command": "gcc -g -Wall -Imicro-libs/logger -Imicro-libs/ctrl-nwk-utils -I. -Og -fpic -shared  -I/Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/lib -I/Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw /Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw/Velocity_Estimation.c /Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw/Velocity_Estimation_data.c -o build/libctrl-ve.so -lm -ldl -lpthread",
+        "directory": "/Users/riccardobenevelli/Desktop/fenice-traction-control-sw",
+        "file": "/Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw/Velocity_Estimation.c"
+    },
+    {
+        "command": "gcc -g -Wall -Imicro-libs/logger -Imicro-libs/ctrl-nwk-utils -I. -Og -fpic -shared  -I/Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/lib -I/Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw /Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw/Velocity_Estimation.c /Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw/Velocity_Estimation_data.c -o build/libctrl-ve.so -lm -ldl -lpthread",
+        "directory": "/Users/riccardobenevelli/Desktop/fenice-traction-control-sw",
+        "file": "/Users/riccardobenevelli/Desktop/fenice-traction-control-sw/fenice-vehicle-model/C_code/Velocity_Estimation_ert_rtw/Velocity_Estimation_data.c"
+    }
+]

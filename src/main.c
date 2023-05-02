@@ -28,7 +28,7 @@ typedef struct thread_data_t {
   int can_id;
 } thread_data_t;
 
-thread_data_t thread_data_1, thread_data_2;
+thread_data_t thread_data_1, thread_data_0;
 
 const int NETWORK_PRIMARY = 0;
 const int NETWORK_SECONDARY = 1;
@@ -44,51 +44,8 @@ bool is_response_timer_elapsed = false;
 queue_t queue;
 pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
 
-void _set_model_param(uint8_t id, float val) {
-  switch (id) {
-  case CTRL_PARAMID_DREQ:
-    model_input.dreq = val;
-    break;
-  case CTRL_PARAMID_STEER_ANG:
-    model_input.delta = val;
-    break;
-  case CTRL_PARAMID_YAW:
-    model_input.omega = val;
-    break;
-  case CTRL_PARAMID_O_RR:
-    vest_data_in.omega_rr = val;
-    model_input.omega_rr = val;
-    break;
-  case CTRL_PARAMID_O_RL:
-    vest_data_in.omega_rl = val;
-    model_input.omega_rl = val;
-    break;
-  case CTRL_PARAMID_O_FR:
-    vest_data_in.omega_fr = val;
-    break;
-  case CTRL_PARAMID_O_FL:
-    vest_data_in.omega_fl = val;
-    break;
-  case CTRL_PARAMID_AX_G:
-    vest_data_in.ax_g = val;
-    break;
-  case CTRL_PARAMID_BRAKE:
-    model_input.brake = val;
-    break;
-  case CTRL_PARAMID_PW_MAP:
-    vest_data_in.torque_map = val;
-    break;
-  case CTRL_PARAMID_SC_MAP:
-    model_input.map_sc = val;
-    break;
-  case CTRL_PARAMID_TV_MAP:
-    model_input.map_tv = val;
-    break;
-  default:
-    LOG_write(LOGLEVEL_WARN, "[MAIN] Unknown param id: %d", id);
-    break;
-  }
-}
+can_t can_primary;
+can_t can_secondary;
 
 void _update_models() {
   VES_step_model(&vest_data_in, &vest_data_out);
@@ -100,32 +57,16 @@ void _update_models() {
   CTRL_step_model(&model_input, &model_output);
 }
 
-void _send_frame(CTRL_PayloadTypeDef *frame) {
-  uint8_t buf[UART_MAX_BUF_LEN];
-  uint8_t pkt_len = CTRL_compose_frame(frame, buf);
-  CLOG_log_raw_packet(buf, pkt_len);
-  CLOG_log_ctrl_frame(frame);
-  UART_send_packet_sync(buf, pkt_len);
-}
-
 void _send_vest_out() {
-  CTRL_PayloadTypeDef frame;
-  frame.CRC16 = 0x0;
+  
+  primary_message_CONTROL_OUTPUT raw;
+  uint8_t* data;
+  primary_conversion_to_raw_CONTROL_OUTPUT(&raw, vest_data_out.bar, vest_data_out.tmax_rr, vest_data_out.tmax_rl, model_output.tm_rl, model_output.tm_rr);
+  primary_serialize_struct_CONTROL_OUTPUT(&data, &raw)
 
-  // NOTE: devo fare la serialize dei dati
-
-  frame.ParamID = CTRL_PARAMID_TLMAX;
-  frame.ParamVal = vest_data_out.tmax_rl;
-  _send_frame(&frame);
   // can_send(int id, char *data, int len, struct can_t *can);
+  can_send(primary_ID_CONTROL_OUTPUT, (char *)data, primary_SIZE_CONTROL_OUTPUT, &can_primary);
 
-  frame.ParamID = CTRL_PARAMID_TRMAX;
-  frame.ParamVal = vest_data_out.tmax_rr;
-  _send_frame(&frame);
-
-  frame.ParamID = CTRL_PARAMID_UBAR;
-  frame.ParamVal = vest_data_out.bar;
-  _send_frame(&frame);
 }
 
 void _send_torque() {
@@ -139,6 +80,15 @@ void _send_torque() {
   frame.ParamID = CTRL_PARAMID_TRIGHT;
   frame.ParamVal = model_output.tm_rr;
   _send_frame(&frame);
+}
+void _send_map(){
+  secondary_message_CONTROL_STATE raw;
+  uint8_t* data;
+  secondary_conversion_to_raw_CONTROL_STATE(&raw, vest_data_in.torque_map, model_input.map_sc, model_input.map_tv);
+
+  secondary_serialize_struct_CONTROL_STATE(&data, &raw);
+
+  can_send(secondary_INDEX_CONTROL_STATE, (char *)data, secondary_SIZE_CONTROL_STATE, &can_secondary);
 }
 
 void signal_handler(int signum) { is_response_timer_elapsed = true; }
@@ -190,18 +140,16 @@ int main() {
   LOG_write(LOGLEVEL_INFO, "[MAIN] Program is ready! Beginning main loop.");
   fflush(stdout);
 
-  can_t can_primary;
   can_init("can1", &can_primary);
-  can_t can_secondary;
   can_init("can0", &can_secondary);
 
-  thread_data_1.can = can_primary;
-  thread_data_1.can_id = NETWORK_PRIMARY;
-  thread_data_2.can = can_secondary;
-  thread_data_2.can_id = NETWORK_SECONDARY;
+  thread_data_0.can = can_primary;
+  thread_data_0.can_id = NETWORK_PRIMARY;
+  thread_data_1.can = can_secondary;
+  thread_data_1.can_id = NETWORK_SECONDARY;
   pthread_t _thread_id_0;
   pthread_t _thread_id_1;
-  pthread_create(&_thread_id_1, NULL, canread, &thread_data_1);
+  pthread_create(&_thread_id_0, NULL, canread, &thread_data_0);
   pthread_create(&_thread_id_1, NULL, canread, &thread_data_1);
 
   while (1) {
@@ -209,13 +157,15 @@ int main() {
     uint8_t UART_rx_buf[UART_MAX_BUF_LEN];
     uint8_t pkt_len;
     queue_element_t q_element;
+    uint16_t readMessage = 0; // 0 = no message, 1 = message read
 
     pthread_mutex_lock(&mtx);
     if(queue_first(&queue, &q_element)){
+      CLOG_log_raw_packet(&q_element.frame, q_element.can_network)
       dequeue(&queue);
-
+      readMessage = 1;
     } else {
-
+      readMessage = 0;
     }
     pthread_mutex_unlock(&mtx);
 
@@ -339,24 +289,14 @@ int main() {
       }
     }
 
-    pkt_len = UART_get_packet_sync(UART_rx_buf, UART_MAX_BUF_LEN);
-
-    if (pkt_len != 0) {
-      CLOG_log_raw_packet(UART_rx_buf,
-                          pkt_len); // NOTE: riaddattare la funzione per accettare frame CAN
-
-      // (timestamp) - idcan - id#data
-      // (10.0000) primary FFF#01FF00           
-      CTRL_read_frame(UART_rx_buf, pkt_len, &ctrl_frame);
-      CLOG_log_ctrl_frame(&ctrl_frame);
-    }
-
     if (is_response_timer_elapsed) {
-      // timer
+      uint64_t processing_time = CLOG_get_microseconds();
       _update_models();
-      // salvarmi il timer
-      _send_vest_out(); // NOTE: inviare questi messaggi in CAN
-      _send_torque();   // NOTE: inviare questi messaggi in CAN
+      processing_time = CLOG_get_microseconds() - processing_time;
+      _send_vest_out();
+      _send_torque();
+      CLOG_log_model_input(&vest_data_in, &vest_data_out);
+      CLOG_log_control_output(&vest_data_out, &model_output, processing_time);
       CLOG_flush_file_buffers();
       is_response_timer_elapsed = false;
     }
