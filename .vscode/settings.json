@@ -21,6 +21,7 @@
         "chrono": "c",
         "variant": "c",
         "string": "c",
-        "string_view": "c"
+        "string_view": "c",
+        "models_interface.h": "c"
     }
 }

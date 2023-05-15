@@ -58,32 +58,19 @@ void _update_models() {
 }
 
 void _send_vest_out() {
-  
+
   primary_message_CONTROL_OUTPUT raw;
-  uint8_t* data;
+  uint8_t data[8];
   primary_conversion_to_raw_CONTROL_OUTPUT(&raw, vest_data_out.bar, vest_data_out.tmax_rr, vest_data_out.tmax_rl, model_output.tm_rl, model_output.tm_rr);
-  primary_serialize_struct_CONTROL_OUTPUT(&data, &raw)
+  primary_serialize_struct_CONTROL_OUTPUT(data, &raw);
 
   // can_send(int id, char *data, int len, struct can_t *can);
   can_send(primary_ID_CONTROL_OUTPUT, (char *)data, primary_SIZE_CONTROL_OUTPUT, &can_primary);
-
 }
 
-void _send_torque() {
-  CTRL_PayloadTypeDef frame;
-  frame.CRC16 = 0x0;
-
-  frame.ParamID = CTRL_PARAMID_TLEFT;
-  frame.ParamVal = model_output.tm_rl;
-  _send_frame(&frame);
-
-  frame.ParamID = CTRL_PARAMID_TRIGHT;
-  frame.ParamVal = model_output.tm_rr;
-  _send_frame(&frame);
-}
 void _send_map(){
   secondary_message_CONTROL_STATE raw;
-  uint8_t* data;
+  uint8_t data[8];
   secondary_conversion_to_raw_CONTROL_STATE(&raw, vest_data_in.torque_map, model_input.map_sc, model_input.map_tv);
 
   secondary_serialize_struct_CONTROL_STATE(&data, &raw);
@@ -143,9 +130,20 @@ int main() {
   can_init("can1", &can_primary);
   can_init("can0", &can_secondary);
 
-  thread_data_0.can = can_primary;
+  if(can_open_socket(&can_primary) < 0){
+    LOG_write(LOGLEVEL_ERR, "Error opening can primary");
+    LOG_write(LOGLEVEL_ERR, can_primary.device);
+    return -1;
+  }
+  if(can_open_socket(&can_secondary) < 0){
+    LOG_write(LOGLEVEL_ERR, "Error opening can secondary");
+    LOG_write(LOGLEVEL_ERR, can_secondary.device);
+    return -1;
+  }
+
+  thread_data_0.can = &can_primary;
   thread_data_0.can_id = NETWORK_PRIMARY;
-  thread_data_1.can = can_secondary;
+  thread_data_1.can = &can_secondary;
   thread_data_1.can_id = NETWORK_SECONDARY;
   pthread_t _thread_id_0;
   pthread_t _thread_id_1;
@@ -161,7 +159,7 @@ int main() {
 
     pthread_mutex_lock(&mtx);
     if(queue_first(&queue, &q_element)){
-      CLOG_log_raw_packet(&q_element.frame, q_element.can_network)
+      CLOG_log_raw_packet(&q_element.frame, q_element.can_network);
       dequeue(&queue);
       readMessage = 1;
     } else {
@@ -294,8 +292,8 @@ int main() {
       _update_models();
       processing_time = CLOG_get_microseconds() - processing_time;
       _send_vest_out();
-      _send_torque();
-      CLOG_log_model_input(&vest_data_in, &vest_data_out);
+      _send_map();
+      CLOG_log_model_input(&vest_data_in, &model_input);
       CLOG_log_control_output(&vest_data_out, &model_output, processing_time);
       CLOG_flush_file_buffers();
       is_response_timer_elapsed = false;

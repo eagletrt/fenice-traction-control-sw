@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "time.h"
 #include "inttypes.h"
+#include "can.h"
 
 
 FILE *f_raw_data, *f_txt, *f_in, *f_out;
@@ -29,9 +30,7 @@ void CLOG_init() {
     f_in = fopen("model_input.csv", "a");
     if (f_in == NULL)
         LOG_write(LOGLEVEL_ERR, "[DATA] Cannot open model_input file in append mode");
-    fprintf(f_in, "tstamp_us,omega_rl,omega_fr,omega_rr,omega_fl,torque_map,map_sc,map_tv,delta,brake,dreq,omega,ax_g");
-    anziche omega e ax_g
-    gyro_z, accel_x
+    fprintf(f_in, "tstamp_us,omega_rl,omega_fr,omega_rr,omega_fl,torque_map,map_sc,map_tv,delta,brake,dreq,gyro_z,accel_x");
 
     f_out = fopen("control_output.csv", "a");
     if (f_in == NULL)
@@ -44,7 +43,7 @@ void CLOG_init() {
  * @note      The newline character is printed at the beginning to avoid problems
  *            if a read is interrupted at shutdown
  */
-void CLOG_log_raw_packet(struct can_frame &msg, int can_network) {
+void CLOG_log_raw_packet(struct can_frame *msg, int can_network) {
     if (f_raw_data == NULL)
         return;
     
@@ -52,16 +51,16 @@ void CLOG_log_raw_packet(struct can_frame &msg, int can_network) {
     static char id[3];
     static char val[2];
 
-    sprintf(id, "%03d", msg.can_id)
+    sprintf(id, "%03d", msg->can_id);
     sprintf(buff, "%s#", id);
 
-    for (int i = 0; i < msg.can_dlc; i++)
+    for (int i = 0; i < msg->can_dlc; i++)
     {
-        sprintf(val, "%02d", msg.data[i])
+        sprintf(val, "%02d", msg->data[i]);
         strcat(buff, val);
     }
 
-    fprintf(f_raw_data, "\n(%"PRIu64 ") ", CLOG_get_microseconds(),);
+    fprintf(f_raw_data, "\n(%"PRIu64 ") ", CLOG_get_microseconds());
     if (can_network == 0)
     {
         fprintf(f_raw_data, "primary ");
@@ -73,23 +72,23 @@ void CLOG_log_raw_packet(struct can_frame &msg, int can_network) {
     fprintf(f_raw_data, "%s", buff);
 }
 
-void CLOG_log_model_input(VES_DataInTypeDef* vest_data_in, VES_DataOutTypeDef* vest_data_out) {
-    if (f_frames == NULL)
+void CLOG_log_model_input(VES_DataInTypeDef* vest_data_in, CTRL_ModelInputTypeDef* model_input) {
+    if (f_in == NULL)
         return;
 
     fprintf(
-        f_frames, "\n%"PRIu64",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+        f_in, "\n%"PRIu64",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
         CLOG_get_microseconds(), vest_data_in->omega_rl, vest_data_in->omega_fr, vest_data_in->omega_rr, vest_data_in->omega_fl, vest_data_in->torque_map, model_input->map_sc, model_input->map_tv, model_input->delta, model_input->brake, model_input->dreq, model_input->omega, vest_data_in->ax_g
     );
 }
 
 void CLOG_log_control_output(VES_DataOutTypeDef* vest_data_out, CTRL_ModelOutputTypeDef* model_output, uint64_t processing_time) {
-    if (f_frames == NULL)
+    if (f_out == NULL)
         return;
 
     fprintf(
-        f_frames, "\n%"PRIu64",%"PRIu64",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
-        CLOG_get_microseconds(), processing_time, vest_data_out->bar, vest_data_out->tmax_r, vest_data_out->tmax_l, model_output->tm_rr, model_output->tm_rl, 
+        f_out, "\n%"PRIu64",%"PRIu64",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+        CLOG_get_microseconds(), processing_time, vest_data_out->bar, vest_data_out->tmax_rr, vest_data_out->tmax_rl, model_output->tm_rr, model_output->tm_rl 
     );
 }
 
