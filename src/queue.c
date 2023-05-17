@@ -35,6 +35,6 @@ int queue_first(const queue_t * q, queue_element_t* element)
 void dequeue(queue_t * q) 
 { 
   if (!emptyp(q)) {
-    q->head = (q->head + 1)/(DIM_queue);
+    q->head = (q->head + 1)%(DIM_queue);
   }
 }
