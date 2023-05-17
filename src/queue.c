@@ -17,7 +17,7 @@ void queue_init(queue_t * q)
 void enqueue (queue_element_t e, queue_t * q) 
 { 
   q->data[q->tail] = e;
-  q->tail = (q->tail + 1)/(DIM_queue); 
+  q->tail = (q->tail + 1)%(DIM_queue); 
 }
 
 int queue_first(const queue_t * q, queue_element_t* element) 
