@@ -15,13 +15,11 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#include "can/lib/primary/c/ids.h"
-#include "can/lib/secondary/c/ids.h"
+#include "can/lib/primary/primary_network.h"
+#include "can/lib/secondary/secondary_network.h"
 
 #define primary_NETWORK_IMPLEMENTATION
 #define secondary_NETWORK_IMPLEMENTATION
-#include "can/lib/primary/c/network.h"
-#include "can/lib/secondary/c/network.h"
 
 typedef struct thread_data_t {
   can_t *can;
@@ -171,10 +169,11 @@ int main() {
 
       switch (q_element.frame.can_id) {
 
-      case primary_ID_INV_L_RESPONSE: {
-        primary_message_INV_L_RESPONSE canlib_response;
-        primary_deserialize_INV_L_RESPONSE(&canlib_response,
-                                           &q_element.frame.data);
+      case PRIMARY_INV_L_RESPONSE_FRAME_ID: {
+        primary_inv_l_response_t canlib_response;
+        primary_inv_l_response_unpack(&canlib_response,
+                                      &q_element.frame.data,
+                                      PRIMARY_INV_L_RESPONSE_BYTE_SIZE);
         inverter_message_INV_RESPONSE inv_response =
             *(inverter_message_INV_RESPONSE *)(&canlib_response);
         static inverter_data_t inverters_data[2];
@@ -186,11 +185,12 @@ int main() {
         }
       } break;
 
-      case primary_ID_INV_R_RESPONSE: {
+      case PRIMARY_INV_R_RESPONSE_FRAME_ID: {
 
-        primary_message_INV_R_RESPONSE canlib_response;
-        primary_deserialize_INV_R_RESPONSE(&canlib_response,
-                                           &q_element.frame.data);
+        primary_inv_r_response_t canlib_response;
+        primary_inv_r_response_unpack(&canlib_response,
+                                      &q_element.frame.data,
+                                      PRIMARY_INV_R_RESPONSE_BYTE_SIZE);
         inverter_message_INV_RESPONSE inv_response =
             *(inverter_message_INV_RESPONSE *)(&canlib_response);
         static inverter_data_t inverters_data[2];
@@ -202,14 +202,14 @@ int main() {
         }
       } break;
 
-      case primary_ID_SPEED: {
+      case PRIMARY_SPEED_FRAME_ID: {
 
-        primary_message_SPEED message;
-        primary_message_SPEED_conversion conversion;
+        primary_speed_t message;
+        primary_speed_converted_t conversion;
         // deserialize
-        primary_deserialize_SPEED(&message, &q_element.frame.data);
+        primary_speed_unpack(&message, &q_element.frame.data, PRIMARY_SPEED_BYTE_SIZE);
         // raw to conversion
-        primary_raw_to_conversion_SPEED(&conversion, message.encoder_r,
+        primary_speed_raw_to_conversion(&conversion, message.encoder_r,
                                         message.encoder_l, message.inverter_r,
                                         message.inverter_l);
 
@@ -217,14 +217,14 @@ int main() {
         vest_data_in.omega_fl = conversion.encoder_l;
       } break;
 
-      case primary_ID_STEER_STATUS: {
+      case PRIMARY_STEER_STATUS_FRAME_ID: {
 
-        primary_message_STEER_STATUS message;
-        primary_message_STEER_STATUS_conversion conversion;
+        primary_steer_status_t message;
+        primary_steer_status_converted_t conversion;
         // deserialize
-        primary_deserialize_STEER_STATUS(&message, &q_element.frame.data);
+        primary_steer_status_unpack(&message, &q_element.frame.data, PRIMARY_STEER_STATUS_BYTE_SIZE);
         // raw to conversion
-        primary_raw_to_conversion_struct_STEER_STATUS(&conversion, &message);
+        primary_steer_status_raw_to_conversion_struct(&conversion, &message);
 
         vest_data_in.torque_map = conversion.map_pw;
         model_input.map_sc = conversion.map_sc;
@@ -237,47 +237,47 @@ int main() {
     } else if (q_element.can_network == NETWORK_SECONDARY) {
 
       switch (q_element.frame.can_id) {
-      case secondary_ID_STEERING_ANGLE: {
+      case SECONDARY_STEERING_ANGLE_FRAME_ID: {
 
-        secondary_message_STEERING_ANGLE message;
+        secondary_steering_angle_t message;
         // deserialize
-        secondary_deserialize_STEERING_ANGLE(&message, &q_element.frame.data);
+        secondary_steering_angle_unpack(&message, &q_element.frame.data, SECONDARY_STEERING_ANGLE_BYTE_SIZE);
 
         model_input.delta = message.angle;
       } break;
 
-      case secondary_ID_PEDALS_OUTPUT: {
+      case SECONDARY_PEDALS_OUTPUT_FRAME_ID: {
 
-        secondary_message_PEDALS_OUTPUT message;
-        secondary_message_PEDALS_OUTPUT_conversion conversion;
+        secondary_pedals_output_t message;
+        secondary_pedals_output_converted_t conversion;
         // deserialize
-        secondary_deserialize_PEDALS_OUTPUT(&message, &q_element.frame.data);
+        secondary_pedals_output_unpack(&message, &q_element.frame.data, SECONDARY_PEDALS_OUTPUT_BYTE_SIZE);
         // raw to conversion
-        secondary_raw_to_conversion_struct_PEDALS_OUTPUT(&conversion, &message);
+        secondary_pedals_output_raw_to_conversion_struct(&conversion, &message);
 
         model_input.brake = conversion.bse_front / 100.0f;
         model_input.dreq = conversion.apps / 100.0f;
       } break;
-      case secondary_ID_IMU_ANGULAR_RATE: {
+      case SECONDARY_IMU_ANGULAR_RATE_FRAME_ID: {
 
-        secondary_message_IMU_ANGULAR_RATE message;
-        secondary_message_IMU_ANGULAR_RATE_conversion conversion;
+        secondary_imu_angular_rate_t message;
+        secondary_imu_angular_rate_converted_t conversion;
         // deserialize
-        secondary_deserialize_IMU_ANGULAR_RATE(&message, &q_element.frame.data);
+        secondary_imu_angular_rate_unpack(&message, &q_element.frame.data, SECONDARY_IMU_ANGULAR_RATE_BYTE_SIZE);
         // raw to conversion
-        secondary_raw_to_conversion_struct_IMU_ANGULAR_RATE(&conversion,
+        secondary_imu_angular_rate_raw_to_conversion_struct(&conversion,
                                                             &message);
 
         model_input.omega = conversion.ang_rate_z * 0.017453f;
       } break;
-      case secondary_ID_IMU_ACCELERATION: {
+      case SECONDARY_IMU_ACCELERATION_FRAME_ID: {
 
-        secondary_message_IMU_ACCELERATION message;
-        secondary_message_IMU_ACCELERATION_conversion conversion;
+        secondary_imu_acceleration_t message;
+        secondary_imu_acceleration_converted_t conversion;
         // deserialize
-        secondary_deserialize_IMU_ACCELERATION(&message, &q_element.frame.data);
+        secondary_imu_acceleration_unpack(&message, &q_element.frame.data, SECONDARY_IMU_ACCELERATION_BYTE_SIZE);
         // raw to conversion
-        secondary_raw_to_conversion_struct_IMU_ACCELERATION(&conversion,
+        secondary_imu_acceleration_raw_to_conversion_struct(&conversion,
                                                             &message);
 
         vest_data_in.ax_g = conversion.accel_x * 9.81f;
