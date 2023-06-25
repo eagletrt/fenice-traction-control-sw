@@ -57,23 +57,23 @@ void _update_models() {
 
 void _send_vest_out() {
 
-  primary_message_CONTROL_OUTPUT raw;
+  primary_control_output_t raw;
   uint8_t data[8];
-  primary_conversion_to_raw_CONTROL_OUTPUT(&raw, vest_data_out.bar, vest_data_out.tmax_rr, vest_data_out.tmax_rl, model_output.tm_rl, model_output.tm_rr);
-  primary_serialize_struct_CONTROL_OUTPUT(data, &raw);
+  primary_control_output_conversion_to_raw(&raw, vest_data_out.bar, vest_data_out.tmax_rr, vest_data_out.tmax_rl, model_output.tm_rl, model_output.tm_rr);
+  primary_control_output_pack(data, &raw, PRIMARY_CONTROL_OUTPUT_BYTE_SIZE);
 
   // can_send(int id, char *data, int len, struct can_t *can);
-  can_send(primary_ID_CONTROL_OUTPUT, (char *)data, primary_SIZE_CONTROL_OUTPUT, &can_primary);
+  can_send(PRIMARY_CONTROL_OUTPUT_FRAME_ID, (char *)data, PRIMARY_CONTROL_OUTPUT_BYTE_SIZE, &can_primary);
 }
 
 void _send_map(){
-  secondary_message_CONTROL_STATE raw;
+  secondary_control_state_t raw;
   uint8_t data[8];
-  secondary_conversion_to_raw_CONTROL_STATE(&raw, vest_data_in.torque_map, model_input.map_sc, model_input.map_tv);
+  secondary_control_state_conversion_to_raw(&raw, vest_data_in.torque_map, model_input.map_sc, model_input.map_tv);
 
-  secondary_serialize_struct_CONTROL_STATE(&data, &raw);
+  secondary_control_state_pack(data, &raw, SECONDARY_CONTROL_STATE_BYTE_SIZE);
 
-  can_send(secondary_INDEX_CONTROL_STATE, (char *)data, secondary_SIZE_CONTROL_STATE, &can_secondary);
+  can_send(SECONDARY_CONTROL_STATE_FRAME_ID, (char *)data, SECONDARY_CONTROL_STATE_BYTE_SIZE, &can_secondary);
 }
 
 void signal_handler(int signum) { is_response_timer_elapsed = true; }
@@ -302,6 +302,6 @@ int main() {
 }
 
 void _LOG_write_raw(char *txt) {
-  printf("%llu - %s\n", CLOG_get_microseconds(), txt);
+  printf("%" PRIu64 " - %s\n", CLOG_get_microseconds(), txt);
   CLOG_log_text((uint8_t *)txt);
 }

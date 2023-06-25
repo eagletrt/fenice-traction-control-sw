@@ -44,6 +44,9 @@ MAIN_SRCS := $(addprefix $(MAIN_SRC_DIR)/, main.c models_interface.c uart_interf
 MAIN_SRCS := $(MAIN_SRCS) micro-libs/ctrl-nwk-utils/ctrl-nwk-utils.c micro-libs/logger/logger.c invlib/inverter.c
 TEST_SRCS := $(addprefix $(MAIN_SRC_DIR)/, test_models.c models_interface.c velocity_estimation.c)
 TEST_SRCS := $(TEST_SRCS) micro-libs/logger/logger.c
+CANLIB_SRC_DIR := $(THIS_DIR)can/lib
+CANLIB_SRCS := $(addprefix $(CANLIB_SRC_DIR)/, primary/primary_network.c secondary/secondary_network.c inverters/inverters_network.c)
+
 
 # ------------------------------- Build targets --------------------------------
 
@@ -76,7 +79,7 @@ micro-libs/%:
 	git submodule update --init --recursive micro-libs
 
 # Build target for the main program
-$(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS)
+$(BUILD_DIR)/fenice-traction-control: $(MAIN_SRCS) $(CANLIB_SRCS)
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS_ALL) $^ -o $@ $(LDFLAGS) -I$(INVLIB_DIR)
 

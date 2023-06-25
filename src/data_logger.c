@@ -60,7 +60,7 @@ void CLOG_log_raw_packet(struct can_frame *msg, int can_network) {
         strcat(buff, val);
     }
 
-    fprintf(f_raw_data, "\n(%"PRIu64 ") ", CLOG_get_microseconds());
+    fprintf(f_raw_data, "\n(%" PRIu64 ") ", CLOG_get_microseconds());
     if (can_network == 0)
     {
         fprintf(f_raw_data, "primary ");
@@ -77,7 +77,7 @@ void CLOG_log_model_input(VES_DataInTypeDef* vest_data_in, CTRL_ModelInputTypeDe
         return;
 
     fprintf(
-        f_in, "\n%"PRIu64",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+        f_in, "\n%" PRIu64 ",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
         CLOG_get_microseconds(), vest_data_in->omega_rl, vest_data_in->omega_fr, vest_data_in->omega_rr, vest_data_in->omega_fl, vest_data_in->torque_map, model_input->map_sc, model_input->map_tv, model_input->delta, model_input->brake, model_input->dreq, model_input->omega, vest_data_in->ax_g
     );
 }
@@ -87,7 +87,7 @@ void CLOG_log_control_output(VES_DataOutTypeDef* vest_data_out, CTRL_ModelOutput
         return;
 
     fprintf(
-        f_out, "\n%"PRIu64",%"PRIu64",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+        f_out, "\n%" PRIu64 ",%" PRIu64 ",%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
         CLOG_get_microseconds(), processing_time, vest_data_out->bar, vest_data_out->tmax_rr, vest_data_out->tmax_rl, model_output->tm_rr, model_output->tm_rl 
     );
 }
@@ -96,7 +96,7 @@ void CLOG_log_text(uint8_t *txt) {
     if (f_txt == NULL)
         return;
     
-    fprintf(f_txt, "%"PRIu64" - %s\n", CLOG_get_microseconds(), txt);
+    fprintf(f_txt, "%" PRIu64 " - %s\n", CLOG_get_microseconds(), txt);
 }
 
 void CLOG_flush_file_buffers() {
