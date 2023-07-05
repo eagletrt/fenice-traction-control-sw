@@ -1,9 +1,6 @@
 [submodule "micro-libs"]
 	path = micro-libs
 	url = git@github.com:eagletrt/micro-libs.git
-[submodule "fenice-vehicle-model"]
-	path = fenice-vehicle-model
-	url = git@github.com:eagletrt/fenice-vehicle-model-2022.git
 [submodule "invlib"]
 	path = invlib
 	url = https://github.com/eagletrt/invlib.git

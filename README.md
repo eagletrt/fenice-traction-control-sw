@@ -43,14 +43,14 @@ To compile this software you need to clone the repo and run the `all` Makefile r
         ```
 
     - Otherwise, just `cd` into it and run `git pull`
-3. Update the submodules (`micro-libs` and `fenice-vehicle-model`). \
-    While the first submodule is small and could be pulled normally, the second contains the whole Matlab model which is massive. Since we only care about the `.c` files inside the `C_code` folder, what I usually do is pull the two modules on my machine and copy over only the relevant files with scp:
+3. Update the submodules (`micro-libs`). \
     - `git submodule init`
     - `git submodule update --remote --recursive`
     - `scp -r fenice-vehicle-model/C_code tc@controllo-sborato:/home/tc/fenice-traction-control-sw/fenice-vehicle-model/C_code`
     - `scp -r micro-libs tc@controllo-sborato:/home/tc/fenice-traction-control-sw`
-4. Compile the code with `make all`
-5. In the `build` folder you should now have:
+4. Download the realize of repository fenice-vehicle-model-DMT and copy the folder C_code in the folder fenice-vehicle-model
+5. Compile the code with `make all`
+6. In the `build` folder you should now have:
     - The main binary: `fenice-traction-control`
     - The velocity estimation dynamic library: `libctrl-ve.so`
     - The four dynamic libs for the models: `libctrl-{no,sc,tc,all}.so`
